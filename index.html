@@ -21,21 +21,14 @@
         .tag { background: rgba(204, 255, 0, 0.1); color: #CCFF00; border: 1px solid rgba(204, 255, 0, 0.3); }
         .tag-gray { background: #1A1A1A; color: #888; border: 1px solid #333; }
         .tag-red { background: rgba(255, 68, 68, 0.1); color: #FF4444; border: 1px solid rgba(255, 68, 68, 0.3); }
-        .tag-blue { background: rgba(59, 130, 246, 0.1); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .persona-card { border-top: 2px solid #CCFF00; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0A0A0A; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        /* Word cloud sizes */
-        .word-xl { font-size: 2.5rem; font-weight: 700; }
-        .word-lg { font-size: 1.8rem; font-weight: 600; }
-        .word-md { font-size: 1.3rem; font-weight: 500; }
-        .word-sm { font-size: 1rem; }
     </style>
 </head>
 <body class="min-h-screen p-3 md:p-6 max-w-6xl mx-auto">
 
-    <!-- ==================== Header ==================== -->
+    <!-- Header -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
         <div class="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
             <div>
@@ -49,126 +42,84 @@
             </a>
         </div>
         
-        <!-- 统计数据 -->
-        <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-800 text-center">
+        <!-- 真实数据概览（来自数据库） -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-gray-800 text-center">
             <div>
-                <div class="text-3xl md:text-4xl font-bold lemon">247</div>
-                <div class="text-gray-500 text-xs mt-1">Backers</div>
+                <div class="text-3xl md:text-4xl font-bold lemon" id="stat-total">-</div>
+                <div class="text-gray-500 text-xs mt-1 uppercase">总样本数</div>
             </div>
             <div>
-                <div class="text-3xl md:text-4xl font-bold">$1.85M</div>
-                <div class="text-gray-500 text-xs mt-1">已筹金额</div>
+                <div class="text-3xl md:text-4xl font-bold" id="stat-valid">-</div>
+                <div class="text-gray-500 text-xs mt-1 uppercase">有效反馈</div>
             </div>
             <div>
-                <div class="text-3xl md:text-4xl font-bold">28</div>
-                <div class="text-gray-500 text-xs mt-1">剩余天数</div>
+                <div class="text-3xl md:text-4xl font-bold text-red-400" id="stat-risk">-</div>
+                <div class="text-gray-500 text-xs mt-1 uppercase">高风险信号</div>
             </div>
-        </div>
-
-        <!-- 筛选按钮 -->
-        <div class="flex gap-2 mt-6 flex-wrap">
-            <button id="btn-all" class="filter-btn bg-lemon px-4 py-2 rounded-lg font-bold text-sm">全部</button>
-            <button id="btn-valid" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400">有效数据</button>
-            <button id="btn-invalid" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400">无效数据</button>
+            <div>
+                <div class="text-3xl md:text-4xl font-bold" id="stat-personas">-</div>
+                <div class="text-gray-500 text-xs mt-1 uppercase">画像类型</div>
+            </div>
         </div>
     </div>
 
-    <!-- ==================== 情绪分析 ==================== -->
+    <!-- 情绪分布（完全动态） -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
         <h2 class="text-xl font-bold mb-6">情绪分布</h2>
-        <div class="space-y-4 mb-6">
-            <div>
-                <div class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-400">正面 (期待/兴奋/满意)</span>
-                    <span class="lemon font-bold" id="positive-pct">45%</span>
-                </div>
-                <div class="bg-gray-800 h-2 rounded-full">
-                    <div class="bg-lemon h-2 rounded-full transition-all" style="width: 45%"></div>
-                </div>
-            </div>
-            <div>
-                <div class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-400">中性 (观望/疑问/建议)</span>
-                    <span class="text-gray-300 font-bold" id="neutral-pct">30%</span>
-                </div>
-                <div class="bg-gray-800 h-2 rounded-full">
-                    <div class="bg-gray-500 h-2 rounded-full transition-all" style="width: 30%"></div>
-                </div>
-            </div>
-            <div>
-                <div class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-400">负面 (担忧/抱怨/质疑)</span>
-                    <span class="text-red-500 font-bold" id="negative-pct">25%</span>
-                </div>
-                <div class="bg-gray-800 h-2 rounded-full">
-                    <div class="bg-red-500 h-2 rounded-full transition-all" style="width: 25%"></div>
-                </div>
-            </div>
+        <div class="space-y-4 mb-6" id="emotion-bars">
+            <!-- 动态生成 -->
         </div>
         <div class="text-sm text-gray-500 space-y-1 pt-4 border-t border-gray-800">
-            <p><span class="lemon">正面：</span>表达购买意愿、技术赞赏、使用场景期待、竞品对比优势认可</p>
-            <p><span class="text-gray-300">中性：</span>价格敏感询问、技术参数咨询、物流售后疑问、功能边界确认</p>
-            <p><span class="text-red-500">负面：</span>质量担忧、交付焦虑、竞品比较劣势、退款意向、技术怀疑</p>
+            <p><span class="lemon">正面：</span>表达购买意愿、技术赞赏、使用场景期待</p>
+            <p><span class="text-gray-300">中性：</span>价格敏感询问、技术参数咨询、物流售后疑问</p>
+            <p><span class="text-red-500">负面：</span>质量担忧、交付焦虑、竞品比较劣势、退款意向</p>
         </div>
     </div>
 
-    <!-- ==================== 词云 ==================== -->
+    <!-- 词云（基于真实数据生成） -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
-        <h2 class="text-xl font-bold mb-6">情绪词云</h2>
-        <div class="flex flex-wrap gap-3 leading-relaxed items-baseline justify-center md:justify-start">
-            <span class="word-xl text-white">color accuracy</span>
-            <span class="word-sm text-gray-500">price</span>
-            <span class="word-md lemon">speed</span>
-            <span class="word-sm text-gray-400">support</span>
-            <span class="word-xl text-white">amazing</span>
-            <span class="word-sm text-gray-600">shipping</span>
-            <span class="word-md text-gray-300">quality</span>
-            <span class="word-lg lemon">innovation</span>
-            <span class="word-sm text-gray-500">resin</span>
-            <span class="word-xl text-white">game changer</span>
-            <span class="word-sm text-gray-400">affordable</span>
-            <span class="word-md text-red-400">delay</span>
-            <span class="word-sm text-gray-600">customer service</span>
-            <span class="word-lg text-gray-200">workflow</span>
-            <span class="word-sm lemon">resolution</span>
+        <h2 class="text-xl font-bold mb-6">高频关键词</h2>
+        <div id="word-cloud" class="flex flex-wrap gap-3 leading-relaxed items-baseline justify-center md:justify-start min-h-[100px]">
+            <span class="text-gray-600">分析中...</span>
         </div>
     </div>
 
-    <!-- ==================== 用户画像速写 ==================== -->
+    <!-- 用户画像（基于数据库统计） -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
         <div class="mb-6">
             <h2 class="text-xl font-bold">用户画像速写</h2>
-            <p class="text-sm text-gray-400 mt-1">人群构成与付费动机</p>
+            <p class="text-sm text-gray-400 mt-1">基于 <span id="persona-sample-size" class="lemon">0</span> 条有效数据实时统计</p>
         </div>
-        
-        <div class="space-y-6" id="persona-container">
-            <!-- 画像卡片将由JS动态生成 -->
+        <div id="persona-container" class="space-y-6">
+            <!-- 动态生成 -->
         </div>
     </div>
 
-    <!-- ==================== 用户原话精选 ==================== -->
+    <!-- 用户原话精选（来自数据库） -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
-        <div class="mb-6">
-            <h2 class="text-xl font-bold">用户原话精选</h2>
-            <p class="text-sm text-gray-400 mt-1">真实反馈与需求洞察</p>
+        <div class="mb-6 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold">用户原话精选</h2>
+                <p class="text-sm text-gray-400 mt-1">最新有效反馈（前3条）</p>
+            </div>
         </div>
         <div id="positive-voices" class="space-y-4">
             <!-- 动态生成 -->
         </div>
     </div>
 
-    <!-- ==================== 取消念头 ==================== -->
+    <!-- 取消念头（来自数据库） -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
         <div class="mb-6">
             <h2 class="text-xl font-bold">让用户取消订单的念头</h2>
-            <p class="text-sm text-gray-400 mt-1">潜在顾虑与流失信号</p>
+            <p class="text-sm text-gray-400 mt-1">高风险流失信号（前3条）</p>
         </div>
         <div id="negative-voices" class="space-y-4">
             <!-- 动态生成 -->
         </div>
     </div>
 
-    <!-- ==================== 底部 ==================== -->
+    <!-- 底部 -->
     <div class="card rounded-2xl p-6 text-sm">
         <div class="grid md:grid-cols-2 gap-6">
             <div>
@@ -185,58 +136,14 @@
     </div>
 
     <script>
-        // ==================== 配置 ====================
         const CONFIG = {
             SUPABASE_URL: 'https://brzxjzucucgzlkhlndcw.supabase.co',
             SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc'
         };
 
         const supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
-        
-        let allData = [];
-        let currentFilter = 'all';
+        let dbData = [];
 
-        // ==================== 用户画像模板数据 ====================
-        const personaTemplates = [
-            {
-                name: '专业产品设计师',
-                nameEn: 'Product Designers',
-                percent: '35%',
-                ltv: '高',
-                price: '低',
-                priceRange: '$3K-5K',
-                quote: 'Finally no more sanding and painting for client presentations. The color accuracy could save me days per project.',
-                pain: '原型迭代周期长，手工上色一致性差',
-                scene: '客户提案前的外观验证 / CMF预研',
-                decision: '色彩保真度 | 表面光洁度 | 打印速度'
-            },
-            {
-                name: '创意工作室主理人',
-                nameEn: 'Studio Owners',
-                percent: '28%',
-                ltv: '中',
-                price: '中',
-                priceRange: '$2K-3K',
-                quote: 'Been outsourcing color prints to Shapeways at $80 per part. If this can bring it in-house, ROI is 6 months.',
-                pain: '外包全彩打印成本高，交付周期不可控',
-                scene: '小批量定制化生产 / 终用户交付',
-                decision: '单件成本 | 设备稳定性 | 耗材开放性'
-            },
-            {
-                name: '硬核创客',
-                nameEn: 'Hardcore Makers',
-                percent: '20%',
-                ltv: '低',
-                price: '高',
-                priceRange: '<$2K',
-                quote: 'The tech is cool but my Prusa already does multicolor. Convince me why full-color is worth 3x the price.',
-                pain: '现有方案(MMU/Palette)色彩切换效率低',
-                scene: '复杂模型制作 / 技术尝鲜',
-                decision: '技术开放性 | 社区生态 | 性价比'
-            }
-        ];
-
-        // ==================== 加载数据 ====================
         async function loadData() {
             document.getElementById('data-status').textContent = '同步中...';
             
@@ -248,127 +155,218 @@
 
                 if (error) throw error;
                 
-                allData = data || [];
-                document.getElementById('data-status').textContent = `已同步 ${allData.length} 条数据 · ${new Date().toLocaleTimeString()}`;
-                document.getElementById('footer-time').textContent = new Date().toLocaleDateString();
+                dbData = data || [];
+                document.getElementById('data-status').textContent = `已同步 ${dbData.length} 条数据 · ${new Date().toLocaleTimeString()}`;
+                document.getElementById('footer-time').textContent = new Date().toLocaleString();
                 
-                updateEmotionStats();
-                renderPersonas();
-                renderVoices();
+                renderAll();
             } catch (err) {
                 document.getElementById('data-status').textContent = '连接失败: ' + err.message;
                 console.error(err);
             }
         }
 
-        // ==================== 更新情绪统计 ====================
-        function updateEmotionStats() {
-            const total = allData.length || 1;
-            const positive = allData.filter(d => d.emotion === 'positive').length;
-            const negative = allData.filter(d => d.emotion === 'negative').length;
-            const neutral = allData.filter(d => d.emotion === 'neutral').length;
+        function renderAll() {
+            // 1. 头部统计（真实数据）
+            const validData = dbData.filter(d => d.is_valid);
+            const highRisk = dbData.filter(d => d.risk_level === '高');
+            const uniquePersonas = [...new Set(dbData.map(d => d.persona).filter(Boolean))];
             
-            document.getElementById('positive-pct').textContent = Math.round(positive/total*100) + '%';
-            document.getElementById('neutral-pct').textContent = Math.round(neutral/total*100) + '%';
-            document.getElementById('negative-pct').textContent = Math.round(negative/total*100) + '%';
+            document.getElementById('stat-total').textContent = dbData.length;
+            document.getElementById('stat-valid').textContent = validData.length;
+            document.getElementById('stat-risk').textContent = highRisk.length;
+            document.getElementById('stat-personas').textContent = uniquePersonas.length;
+
+            // 2. 情绪分布（真实百分比+联动进度条）
+            const total = dbData.length || 1;
+            const emotions = {
+                positive: dbData.filter(d => d.emotion === 'positive').length,
+                neutral: dbData.filter(d => d.emotion === 'neutral').length,
+                negative: dbData.filter(d => d.emotion === 'negative').length
+            };
+            
+            const emotionConfig = [
+                { key: 'positive', label: '正面 (期待/兴奋/满意)', color: 'bg-lemon', textColor: 'lemon' },
+                { key: 'neutral', label: '中性 (观望/疑问/建议)', color: 'bg-gray-500', textColor: 'text-gray-300' },
+                { key: 'negative', label: '负面 (担忧/抱怨/质疑)', color: 'bg-red-500', textColor: 'text-red-500' }
+            ];
+            
+            document.getElementById('emotion-bars').innerHTML = emotionConfig.map(e => {
+                const pct = Math.round((emotions[e.key] / total) * 100);
+                return `
+                <div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-gray-400">${e.label}</span>
+                        <span class="${e.textColor} font-bold">${pct}%</span>
+                    </div>
+                    <div class="bg-gray-800 h-2 rounded-full">
+                        <div class="${e.color} h-2 rounded-full transition-all duration-1000" style="width: ${pct}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            // 3. 词云（从真实text提取高频词）
+            generateWordCloud(dbData.map(d => d.text).join(' '));
+
+            // 4. 用户画像（基于数据库统计真实占比）
+            renderPersonasFromData(dbData);
+
+            // 5. 原话精选（真实数据，type=voice且emotion=positive，取前3）
+            const positiveVoices = dbData
+                .filter(d => d.is_valid && d.emotion === 'positive')
+                .slice(0, 3);
+            document.getElementById('positive-voices').innerHTML = positiveVoices.length 
+                ? positiveVoices.map(item => createVoiceCard(item, 'positive')).join('')
+                : '<p class="text-gray-600 text-center py-8">暂无正面反馈数据</p>';
+
+            // 6. 取消念头（真实数据，risk_level=高或emotion=negative，取前3）
+            const negativeVoices = dbData
+                .filter(d => d.risk_level === '高' || d.emotion === 'negative' || d.type === 'risk')
+                .slice(0, 3);
+            document.getElementById('negative-voices').innerHTML = negativeVoices.length
+                ? negativeVoices.map(item => createVoiceCard(item, 'negative')).join('')
+                : '<p class="text-gray-600 text-center py-8">暂无风险信号</p>';
         }
 
-        // ==================== 渲染画像 ====================
-        function renderPersonas() {
-            const container = document.getElementById('persona-container');
-            container.innerHTML = personaTemplates.map(p => `
-                <div class="persona-card bg-gray-900/30 rounded-lg p-5">
+        function generateWordCloud(text) {
+            if (!text) {
+                document.getElementById('word-cloud').innerHTML = '<span class="text-gray-600">数据不足</span>';
+                return;
+            }
+            
+            // 简单分词：提取英文单词和中文词汇（长度>2）
+            const words = text.toLowerCase()
+                .replace(/[^\w\s\u4e00-\u9fa5]/g, ' ')
+                .split(/\s+/)
+                .filter(w => w.length > 3 || (w.length > 1 && /[\u4e00-\u9fa5]/.test(w)))
+                .filter(w => !['this','that','with','from','have','been','will','what','when','where','how','why','does','can','you','the','and','for','are','but','not','you','all','any','had','her','was','one','our','out','day','get','has','him','his','how','man','new','now','old','see','two','way','who','boy','did','its','let','put','say','she','too','use'].includes(w));
+            
+            // 统计频率
+            const freq = {};
+            words.forEach(w => freq[w] = (freq[w] || 0) + 1);
+            
+            // 取前15高频词
+            const sorted = Object.entries(freq)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 15);
+            
+            if (sorted.length === 0) {
+                document.getElementById('word-cloud').innerHTML = '<span class="text-gray-600">数据不足</span>';
+                return;
+            }
+            
+            const maxFreq = sorted[0][1];
+            document.getElementById('word-cloud').innerHTML = sorted.map(([word, count]) => {
+                const size = count / maxFreq;
+                let className = 'text-sm text-gray-500';
+                if (size > 0.8) className = 'text-3xl font-bold text-white';
+                else if (size > 0.6) className = 'text-2xl font-semibold lemon';
+                else if (size > 0.4) className = 'text-xl text-gray-200';
+                else if (size > 0.2) className = 'text-base text-gray-400';
+                
+                return `<span class="${className} mx-1">${word}</span>`;
+            }).join('');
+        }
+
+        function renderPersonasFromData(data) {
+            // 统计各画像真实占比
+            const personaStats = {};
+            data.forEach(d => {
+                if (d.persona) {
+                    personaStats[d.persona] = (personaStats[d.persona] || 0) + 1;
+                }
+            });
+            
+            const total = data.length || 1;
+            const sortedPersonas = Object.entries(personaStats)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 3); // 取前3类
+            
+            document.getElementById('persona-sample-size').textContent = data.length;
+            
+            if (sortedPersonas.length === 0) {
+                document.getElementById('persona-container').innerHTML = '<p class="text-gray-600 text-center py-8">暂无画像数据</p>';
+                return;
+            }
+            
+            // 获取每类画像的代表性quote（该画像下最新一条有text的）
+            document.getElementById('persona-container').innerHTML = sortedPersonas.map(([name, count]) => {
+                const pct = Math.round((count / total) * 100);
+                const sample = data.find(d => d.persona === name && d.text) || {};
+                const quote = sample.text || '暂无代表性引用';
+                const pain = sample.pain_points || '数据收集中';
+                const scene = sample.use_case || '数据收集中';
+                const decision = sample.decision_factors || '数据收集中';
+                
+                // 价格敏感度统计
+                const sensitivities = data.filter(d => d.persona === name).map(d => d.price_sensitivity);
+                const highSens = sensitivities.filter(s => s === '高').length;
+                const sensLevel = highSens > sensitivities.length / 2 ? '高' : highSens > 0 ? '中' : '低';
+                
+                return `
+                <div class="border-t-2 border-[#CCFF00] bg-gray-900/30 rounded-lg p-5">
                     <div class="flex flex-col md:flex-row justify-between gap-4 mb-4">
                         <div>
-                            <h3 class="font-bold text-lg mb-2">${p.name} / ${p.nameEn}</h3>
+                            <h3 class="font-bold text-lg mb-2">${name}</h3>
                             <div class="flex flex-wrap gap-2 text-xs font-mono">
-                                <span class="px-2 py-1 bg-gray-800 rounded text-gray-300">占比${p.percent}</span>
-                                <span class="px-2 py-1 bg-gray-800 rounded text-gray-300">LTV${p.ltv}</span>
-                                <span class="px-2 py-1 ${p.price === '高' ? 'bg-red-900/50 text-red-400' : 'bg-lemon text-black'} rounded">${p.price === '高' ? '价格敏感度高' : p.price === '中' ? '价格敏感度中' : '价格敏感度低'}</span>
+                                <span class="px-2 py-1 bg-gray-800 rounded text-gray-300">占比${pct}%</span>
+                                <span class="px-2 py-1 ${sensLevel === '高' ? 'bg-red-900/50 text-red-400' : 'bg-lemon text-black'} rounded">
+                                    价格敏感度${sensLevel}
+                                </span>
                             </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-2xl font-bold lemon">${p.priceRange}</div>
-                            <div class="text-xs text-gray-500 uppercase tracking-wider">可接受价位</div>
                         </div>
                     </div>
                     <div class="mb-4 p-3 bg-black/30 rounded border-l-2 border-gray-700">
-                        <p class="text-sm text-gray-300 italic">"${p.quote}"</p>
+                        <p class="text-sm text-gray-300 italic">"${escapeHtml(quote.substring(0, 200))}${quote.length > 200 ? '...' : ''}"</p>
                     </div>
                     <div class="grid md:grid-cols-3 gap-4 pt-4 border-t border-gray-800 text-sm">
                         <div>
-                            <span class="text-gray-500 text-xs block mb-1 uppercase tracking-wider">核心痛点</span>
-                            <span class="text-white">${p.pain}</span>
+                            <span class="text-gray-500 text-xs block mb-1 uppercase">核心痛点</span>
+                            <span class="text-white">${pain}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500 text-xs block mb-1 uppercase tracking-wider">使用场景</span>
-                            <span class="text-white">${p.scene}</span>
+                            <span class="text-gray-500 text-xs block mb-1 uppercase">使用场景</span>
+                            <span class="text-white">${scene}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500 text-xs block mb-1 uppercase tracking-wider">决策关键因子</span>
-                            <span class="lemon">${p.decision}</span>
+                            <span class="text-gray-500 text-xs block mb-1 uppercase">决策关键因子</span>
+                            <span class="lemon">${decision}</span>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
-        // ==================== 渲染原话 ====================
-        function renderVoices() {
-            // 根据筛选条件过滤
-            let filtered = allData;
-            if (currentFilter === 'valid') filtered = allData.filter(d => d.is_valid);
-            if (currentFilter === 'invalid') filtered = allData.filter(d => !d.is_valid);
+        function createVoiceCard(item, type) {
+            const isRisk = type === 'negative';
+            const borderClass = isRisk ? 'risk-border bg-red-950/10' : 'quote-border bg-gray-900/20';
+            const riskBadge = item.risk_level ? `<span class="px-2 py-1 tag-red rounded text-xs">风险:${item.risk_level}</span>` : '';
             
-            // 正面原话（取前3条）
-            const positive = filtered.filter(d => d.emotion === 'positive' || (d.type === 'voice' && d.emotion !== 'negative')).slice(0, 3);
-            document.getElementById('positive-voices').innerHTML = positive.map(item => `
-                <div class="quote-border bg-gray-900/20 rounded-lg p-4">
-                    <p class="text-gray-200 italic mb-3 text-sm md:text-base">"${escapeHtml(item.text)}"</p>
-                    <div class="flex flex-wrap gap-2 mb-3 text-xs">
-                        <span class="px-2 py-1 bg-gray-800 rounded text-gray-400">场景：${item.use_case || '未分类'}</span>
-                        <span class="px-2 py-1 bg-gray-800 rounded lemon">情绪：${getEmotionText(item.emotion)}</span>
+            return `
+            <div class="${borderClass} rounded-lg p-4">
+                <p class="text-gray-200 italic mb-3 text-sm md:text-base">"${escapeHtml(item.text)}"</p>
+                <div class="flex flex-wrap gap-2 mb-3 text-xs">
+                    <span class="px-2 py-1 bg-gray-800 rounded text-gray-400">${item.persona || '未分类'}</span>
+                    <span class="px-2 py-1 bg-gray-800 rounded ${isRisk ? 'text-red-400' : 'lemon'}">
+                        ${item.emotion === 'positive' ? '正面' : item.emotion === 'negative' ? '负面' : '中性'}
+                    </span>
+                    ${riskBadge}
+                </div>
+                <div class="grid md:grid-cols-3 gap-3 text-sm pt-3 border-t border-gray-800">
+                    <div>
+                        <span class="text-gray-500 text-xs block mb-1">痛点</span>
+                        <span class="text-white">${item.pain_points || '-'}</span>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-3 text-sm pt-3 border-t border-gray-800">
-                        <div>
-                            <span class="text-gray-500 text-xs block mb-1">用户原话指向</span>
-                            <span class="text-white">${item.pain_points || '无明确指向'}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-500 text-xs block mb-1">产品能力归因</span>
-                            <span class="lemon">${item.decision_factors || '待分析'}</span>
-                        </div>
+                    <div>
+                        <span class="text-gray-500 text-xs block mb-1">场景</span>
+                        <span class="text-white">${item.use_case || '-'}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 text-xs block mb-1">决策因子</span>
+                        <span class="${isRisk ? 'text-red-400' : 'lemon'}">${item.decision_factors || '-'}</span>
                     </div>
                 </div>
-            `).join('') || '<p class="text-gray-500 text-center py-8">暂无数据</p>';
-
-            // 负面/风险原话（取前3条高风险）
-            const negative = filtered.filter(d => d.emotion === 'negative' || d.risk_level === '高' || d.type === 'risk').slice(0, 3);
-            document.getElementById('negative-voices').innerHTML = negative.map(item => `
-                <div class="risk-border bg-red-950/10 rounded-lg p-4">
-                    <p class="text-gray-200 italic mb-3 text-sm md:text-base">"${escapeHtml(item.text)}"</p>
-                    <div class="flex flex-wrap gap-2 mb-3 text-xs">
-                        <span class="px-2 py-1 bg-gray-900 rounded text-gray-400">场景：${item.use_case || '未分类'}</span>
-                        <span class="px-2 py-1 bg-gray-900 rounded text-red-400">情绪：${getEmotionText(item.emotion)}</span>
-                        ${item.risk_level ? `<span class="px-2 py-1 tag-red rounded">风险等级：${item.risk_level}</span>` : ''}
-                    </div>
-                    <div class="grid md:grid-cols-2 gap-3 text-sm pt-3 border-t border-gray-800">
-                        <div>
-                            <span class="text-gray-500 text-xs block mb-1">用户原话指向</span>
-                            <span class="text-white">${item.pain_points || '无明确指向'}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-500 text-xs block mb-1">产品能力归因</span>
-                            <span class="text-red-400">${item.decision_factors || '待分析'}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('') || '<p class="text-gray-500 text-center py-8">暂无风险数据</p>';
-        }
-
-        function getEmotionText(e) {
-            const map = { positive: '正面', negative: '负面', neutral: '中性' };
-            return map[e] || e;
+            </div>`;
         }
 
         function escapeHtml(text) {
@@ -378,32 +376,7 @@
             return div.innerHTML;
         }
 
-        // ==================== 筛选交互 ====================
-        function setupFilters() {
-            document.getElementById('btn-all').addEventListener('click', () => setFilter('all'));
-            document.getElementById('btn-valid').addEventListener('click', () => setFilter('valid'));
-            document.getElementById('btn-invalid').addEventListener('click', () => setFilter('invalid'));
-        }
-
-        function setFilter(type) {
-            currentFilter = type;
-            
-            ['all', 'valid', 'invalid'].forEach(key => {
-                const btn = document.getElementById(`btn-${key}`);
-                if (key === type) {
-                    btn.classList.remove('bg-gray-800', 'text-gray-400');
-                    btn.classList.add('bg-lemon', 'text-black');
-                } else {
-                    btn.classList.remove('bg-lemon', 'text-black');
-                    btn.classList.add('bg-gray-800', 'text-gray-400');
-                }
-            });
-            
-            renderVoices();
-        }
-
-        // ==================== 启动 ====================
-        setupFilters();
+        // 启动
         loadData();
         setInterval(loadData, 30000);
     </script>
