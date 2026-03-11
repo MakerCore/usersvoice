@@ -87,6 +87,42 @@
     
     load();
 </script>
-
+<script>
+  // ==================== REPLACE HERE ====================
+  const SUPABASE_URL = 'https://brzxjzucucgzlkhlndcw.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc';
+  // ======================================================
+  
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
+  async function loadVoiceData() {
+    const { data, error } = await supabaseClient
+      .from('user_voices')
+      .select('text, source')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    
+    if (error) {
+      console.error('Error:', error);
+      document.querySelector('.quote p.italic').textContent = '"加载失败..."';
+      return;
+    }
+    
+    if (data && data.length > 0) {
+      // Update first card in "User Voice" section
+      const firstQuote = document.querySelector('.quote');
+      if (firstQuote) {
+        const textEl = firstQuote.querySelector('p.italic');
+        const sourceEl = firstQuote.querySelector('.text-xs.text-gray-500');
+        
+        if (textEl) textEl.textContent = '"' + data[0].text + '"';
+        if (sourceEl) sourceEl.textContent = 'Source: ' + data[0].source;
+      }
+    }
+  }
+  
+  // Auto-load on page open
+  loadVoiceData();
+</script>
 </body>
 </html>
