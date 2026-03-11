@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全部原话 | iNew3D User Voice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0A0A0A; color: #E5E5E5; }
+        .lemon { color: #CCFF00; }
+        .bg-lemon { background: #CCFF00; color: #000; }
+        .card { background: #141414; border: 1px solid #262626; }
+        .quote-border { border-left: 3px solid #CCFF00; }
+    </style>
+</head>
+<body class="min-h-screen p-3 md:p-6 max-w-6xl mx-auto">
+
+    <div class="card rounded-2xl p-4 md:p-6 mb-6">
+        <a href="index.html" class="text-gray-500 text-sm hover:text-[#CCFF00] mb-2 inline-block">← 返回首页</a>
+        <h1 class="text-2xl md:text-4xl font-bold">全部用户原话</h1>
+        <p class="text-gray-400 mt-2 text-sm">所有有效反馈数据（按时间倒序）</p>
+        
+        <!-- 筛选 -->
+        <div class="flex gap-2 mt-4 flex-wrap">
+            <button onclick="filter('all')" class="filter-btn bg-lemon px-4 py-2 rounded-lg font-bold text-sm" data-type="all">全部</button>
+            <button onclick="filter('positive')" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400" data-type="positive">正面</button>
+            <button onclick="filter('neutral')" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400" data-type="neutral">中性</button>
+            <button onclick="filter('negative')" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400" data-type="negative">负面</button>
+        </div>
+    </div>
+
+    <div id="voice-list" class="space-y-4 mb-6"></div>
+
+    <div class="card rounded-2xl p-6 text-sm text-center">
+        <p class="text-gray-500">共 <span id="total-count" class="lemon">0</span> 条数据 | 作者：<span class="lemon">Lemon.Wang</span></p>
+    </div>
+
+    <script>
+        const CONFIG = {
+            SUPABASE_URL: 'https://brzxjzucucgzlkhlndcw.supabase.co',
+            SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc'
+        };
+        const supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+        let allData = [];
+        let currentFilter = 'all';
+
+        async function loadData() {
+            const { data, error } = await supabaseClient.from('user_voices').select('*').order('source_created_at', { ascending: false });
+            if (error) return;
+            allData = data.filter(d => d.is_valid);
+            document.getElementById('total-count').textContent = allData.length;
+            render();
+        }
+
+        function render() {
+            const filtered = currentFilter === 'all' ? allData : allData.filter(d => d.emotion === currentFilter);
+            document.getElementById('voice-list').innerHTML = filtered.map(item => `
+                <div class="quote-border bg-gray-900/20 rounded-lg p-4 md:p-6 card">
+                    <p class="text-gray-200 italic mb-4 text-base leading-relaxed">"${item.text}"</p>
+                    <div class="flex flex-wrap gap-2 mb-4 text-xs">
+                        <span class="px-2 py-1 bg-gray-800 rounded text-gray-300">${item.persona || '未分类'}</span>
+                        <span class="px-2 py-1 bg-gray-800 rounded ${item.emotion === 'positive' ? 'text-green-400' : item.emotion === 'negative' ? 'text-red-400' : 'text-gray-400'}">${item.emotion}</span>
+                        <span class="px-2 py-1 bg-gray-900 rounded text-gray-500">${new Date(item.source_created_at).toLocaleString()}</span>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-4 text-sm pt-4 border-t border-gray-800">
+                        <div><span class="text-gray-500 text-xs block mb-1">痛点</span><span class="text-white">${item.pain_points || '-'}</span></div>
+                        <div><span class="text-gray-500 text-xs block mb-1">场景</span><span class="text-white">${item.use_case || '-'}</span></div>
+                        <div><span class="text-gray-500 text-xs block mb-1">决策因子</span><span class="lemon">${item.decision_factors || '-'}</span></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filter(type) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.type === type) {
+                    btn.classList.remove('bg-gray-800', 'text-gray-400');
+                    btn.classList.add('bg-lemon', 'text-black');
+                } else {
+                    btn.classList.remove('bg-lemon', 'text-black');
+                    btn.classList.add('bg-gray-800', 'text-gray-400');
+                }
+            });
+            render();
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
