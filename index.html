@@ -20,70 +20,168 @@
         .invalid-border { border-left: 3px solid #666666; }
         .tag { background: rgba(204, 255, 0, 0.1); color: #CCFF00; border: 1px solid rgba(204, 255, 0, 0.3); }
         .tag-gray { background: #1A1A1A; color: #888; border: 1px solid #333; }
-        .tag-risk { background: rgba(255, 68, 68, 0.1); color: #FF4444; border: 1px solid rgba(255, 68, 68, 0.3); }
+        .tag-red { background: rgba(255, 68, 68, 0.1); color: #FF4444; border: 1px solid rgba(255, 68, 68, 0.3); }
+        .tag-blue { background: rgba(59, 130, 246, 0.1); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .persona-card { border-top: 2px solid #CCFF00; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0A0A0A; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        /* Word cloud sizes */
+        .word-xl { font-size: 2.5rem; font-weight: 700; }
+        .word-lg { font-size: 1.8rem; font-weight: 600; }
+        .word-md { font-size: 1.3rem; font-weight: 500; }
+        .word-sm { font-size: 1rem; }
     </style>
 </head>
-<body class="min-h-screen p-3 md:p-6 max-w-7xl mx-auto">
+<body class="min-h-screen p-3 md:p-6 max-w-6xl mx-auto">
 
+    <!-- ==================== Header ==================== -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
         <div class="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
             <div>
-                <h1 class="text-2xl md:text-4xl font-bold leading-tight">iNew3D <span class="lemon">User Voice</span></h1>
-                <p class="text-gray-400 mt-2 text-sm md:text-base">用户声音数据面板 · 归因分析系统</p>
-                <p class="text-xs text-gray-600 mt-1" id="data-status">初始化...</p>
+                <h1 class="text-2xl md:text-5xl font-bold leading-tight">iNew3D Full Color<br><span class="lemon">3D Printer</span></h1>
+                <p class="text-gray-400 mt-2 text-sm md:text-base">Kickstarter众筹项目 · 全彩桌面3D打印机 · 实时监控面板</p>
+                <p class="text-xs text-gray-600 mt-1" id="data-status">连接中...</p>
             </div>
-            <div class="flex gap-2 flex-wrap">
-                <button id="btn-all" class="filter-btn bg-lemon px-4 py-2 rounded-lg font-bold text-sm">全部</button>
-                <button id="btn-valid" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400">有效数据</button>
-                <button id="btn-invalid" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400">无效数据</button>
-            </div>
+            <a href="https://www.kickstarter.com/projects/inew3d/inew3d-full-color-3d-printer" target="_blank" 
+               class="bg-lemon px-6 py-3 rounded-lg font-bold whitespace-nowrap hover:opacity-90 transition">
+                查看项目 →
+            </a>
         </div>
         
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-gray-800">
-            <div class="text-center p-3 bg-black/30 rounded-lg">
-                <div class="text-2xl md:text-3xl font-bold lemon" id="total-count">-</div>
-                <div class="text-gray-500 text-xs mt-1 uppercase tracking-wider">总样本数</div>
+        <!-- 统计数据 -->
+        <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-800 text-center">
+            <div>
+                <div class="text-3xl md:text-4xl font-bold lemon">247</div>
+                <div class="text-gray-500 text-xs mt-1">Backers</div>
             </div>
-            <div class="text-center p-3 bg-black/30 rounded-lg">
-                <div class="text-2xl md:text-3xl font-bold lemon" id="valid-count">-</div>
-                <div class="text-gray-500 text-xs mt-1 uppercase tracking-wider">有效数据</div>
+            <div>
+                <div class="text-3xl md:text-4xl font-bold">$1.85M</div>
+                <div class="text-gray-500 text-xs mt-1">已筹金额</div>
             </div>
-            <div class="text-center p-3 bg-black/30 rounded-lg">
-                <div class="text-2xl md:text-3xl font-bold text-red-400" id="risk-count">-</div>
-                <div class="text-gray-500 text-xs mt-1 uppercase tracking-wider">风险信号</div>
+            <div>
+                <div class="text-3xl md:text-4xl font-bold">28</div>
+                <div class="text-gray-500 text-xs mt-1">剩余天数</div>
             </div>
-            <div class="text-center p-3 bg-black/30 rounded-lg">
-                <div class="text-2xl md:text-3xl font-bold" id="update-time">-</div>
-                <div class="text-gray-500 text-xs mt-1 uppercase tracking-wider">最后更新</div>
-            </div>
+        </div>
+
+        <!-- 筛选按钮 -->
+        <div class="flex gap-2 mt-6 flex-wrap">
+            <button id="btn-all" class="filter-btn bg-lemon px-4 py-2 rounded-lg font-bold text-sm">全部</button>
+            <button id="btn-valid" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400">有效数据</button>
+            <button id="btn-invalid" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400">无效数据</button>
         </div>
     </div>
 
+    <!-- ==================== 情绪分析 ==================== -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
-        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">画像筛选</h3>
-        <div class="flex flex-wrap gap-2" id="persona-filters">
-            <button data-persona="all" class="persona-btn tag px-3 py-1 rounded-full text-xs font-medium bg-lemon text-black">全部画像</button>
-            <button data-persona="专业产品设计师" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">专业产品设计师</button>
-            <button data-persona="创意工作室主理人" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">创意工作室主理人</button>
-            <button data-persona="教育用户" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">教育用户</button>
-            <button data-persona="硬核创客" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">硬核创客</button>
-            <button data-persona="个人爱好" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">个人爱好</button>
-            <button data-persona="其他" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">其他</button>
+        <h2 class="text-xl font-bold mb-6">情绪分布</h2>
+        <div class="space-y-4 mb-6">
+            <div>
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-400">正面 (期待/兴奋/满意)</span>
+                    <span class="lemon font-bold" id="positive-pct">45%</span>
+                </div>
+                <div class="bg-gray-800 h-2 rounded-full">
+                    <div class="bg-lemon h-2 rounded-full transition-all" style="width: 45%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-400">中性 (观望/疑问/建议)</span>
+                    <span class="text-gray-300 font-bold" id="neutral-pct">30%</span>
+                </div>
+                <div class="bg-gray-800 h-2 rounded-full">
+                    <div class="bg-gray-500 h-2 rounded-full transition-all" style="width: 30%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-400">负面 (担忧/抱怨/质疑)</span>
+                    <span class="text-red-500 font-bold" id="negative-pct">25%</span>
+                </div>
+                <div class="bg-gray-800 h-2 rounded-full">
+                    <div class="bg-red-500 h-2 rounded-full transition-all" style="width: 25%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="text-sm text-gray-500 space-y-1 pt-4 border-t border-gray-800">
+            <p><span class="lemon">正面：</span>表达购买意愿、技术赞赏、使用场景期待、竞品对比优势认可</p>
+            <p><span class="text-gray-300">中性：</span>价格敏感询问、技术参数咨询、物流售后疑问、功能边界确认</p>
+            <p><span class="text-red-500">负面：</span>质量担忧、交付焦虑、竞品比较劣势、退款意向、技术怀疑</p>
         </div>
     </div>
 
-    <div id="data-container" class="space-y-4">
-        <div class="card rounded-2xl p-12 text-center">
-            <div class="text-2xl text-gray-600">加载中...</div>
+    <!-- ==================== 词云 ==================== -->
+    <div class="card rounded-2xl p-4 md:p-6 mb-6">
+        <h2 class="text-xl font-bold mb-6">情绪词云</h2>
+        <div class="flex flex-wrap gap-3 leading-relaxed items-baseline justify-center md:justify-start">
+            <span class="word-xl text-white">color accuracy</span>
+            <span class="word-sm text-gray-500">price</span>
+            <span class="word-md lemon">speed</span>
+            <span class="word-sm text-gray-400">support</span>
+            <span class="word-xl text-white">amazing</span>
+            <span class="word-sm text-gray-600">shipping</span>
+            <span class="word-md text-gray-300">quality</span>
+            <span class="word-lg lemon">innovation</span>
+            <span class="word-sm text-gray-500">resin</span>
+            <span class="word-xl text-white">game changer</span>
+            <span class="word-sm text-gray-400">affordable</span>
+            <span class="word-md text-red-400">delay</span>
+            <span class="word-sm text-gray-600">customer service</span>
+            <span class="word-lg text-gray-200">workflow</span>
+            <span class="word-sm lemon">resolution</span>
         </div>
     </div>
 
-    <div id="empty-state" class="hidden card rounded-2xl p-12 text-center">
-        <div class="text-4xl mb-4">📭</div>
-        <h3 class="text-lg font-bold text-gray-400">暂无匹配数据</h3>
+    <!-- ==================== 用户画像速写 ==================== -->
+    <div class="card rounded-2xl p-4 md:p-6 mb-6">
+        <div class="mb-6">
+            <h2 class="text-xl font-bold">用户画像速写</h2>
+            <p class="text-sm text-gray-400 mt-1">人群构成与付费动机</p>
+        </div>
+        
+        <div class="space-y-6" id="persona-container">
+            <!-- 画像卡片将由JS动态生成 -->
+        </div>
+    </div>
+
+    <!-- ==================== 用户原话精选 ==================== -->
+    <div class="card rounded-2xl p-4 md:p-6 mb-6">
+        <div class="mb-6">
+            <h2 class="text-xl font-bold">用户原话精选</h2>
+            <p class="text-sm text-gray-400 mt-1">真实反馈与需求洞察</p>
+        </div>
+        <div id="positive-voices" class="space-y-4">
+            <!-- 动态生成 -->
+        </div>
+    </div>
+
+    <!-- ==================== 取消念头 ==================== -->
+    <div class="card rounded-2xl p-4 md:p-6 mb-6">
+        <div class="mb-6">
+            <h2 class="text-xl font-bold">让用户取消订单的念头</h2>
+            <p class="text-sm text-gray-400 mt-1">潜在顾虑与流失信号</p>
+        </div>
+        <div id="negative-voices" class="space-y-4">
+            <!-- 动态生成 -->
+        </div>
+    </div>
+
+    <!-- ==================== 底部 ==================== -->
+    <div class="card rounded-2xl p-6 text-sm">
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">数据来源</h3>
+                <p class="text-gray-300">公开网络信息（Reddit、YouTube、Kickstarter等）</p>
+                <p class="text-xs text-gray-600 mt-2">本页面为个人市场/产品研究笔记，不代表任何公司立场</p>
+            </div>
+            <div>
+                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">元数据</h3>
+                <p class="text-gray-300">作者：<span class="lemon">Lemon.Wang</span>（独立产品研究者）</p>
+                <p class="text-gray-500 text-xs mt-1">最后更新：<span id="footer-time">-</span></p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -93,186 +191,205 @@
             SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc'
         };
 
-        // ==================== 初始化 Supabase ====================
-        const supabaseClient = window.supabase.createClient(
-            CONFIG.SUPABASE_URL, 
-            CONFIG.SUPABASE_KEY
-        );
+        const supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+        
+        let allData = [];
+        let currentFilter = 'all';
 
-        // ==================== 状态管理 ====================
-        const State = {
-            data: [],
-            filter: 'all', // all | valid | invalid
-            persona: 'all'
-        };
-
-        // ==================== DOM 元素 ====================
-        const DOM = {
-            status: document.getElementById('data-status'),
-            container: document.getElementById('data-container'),
-            empty: document.getElementById('empty-state'),
-            counts: {
-                total: document.getElementById('total-count'),
-                valid: document.getElementById('valid-count'),
-                risk: document.getElementById('risk-count'),
-                time: document.getElementById('update-time')
+        // ==================== 用户画像模板数据 ====================
+        const personaTemplates = [
+            {
+                name: '专业产品设计师',
+                nameEn: 'Product Designers',
+                percent: '35%',
+                ltv: '高',
+                price: '低',
+                priceRange: '$3K-5K',
+                quote: 'Finally no more sanding and painting for client presentations. The color accuracy could save me days per project.',
+                pain: '原型迭代周期长，手工上色一致性差',
+                scene: '客户提案前的外观验证 / CMF预研',
+                decision: '色彩保真度 | 表面光洁度 | 打印速度'
+            },
+            {
+                name: '创意工作室主理人',
+                nameEn: 'Studio Owners',
+                percent: '28%',
+                ltv: '中',
+                price: '中',
+                priceRange: '$2K-3K',
+                quote: 'Been outsourcing color prints to Shapeways at $80 per part. If this can bring it in-house, ROI is 6 months.',
+                pain: '外包全彩打印成本高，交付周期不可控',
+                scene: '小批量定制化生产 / 终用户交付',
+                decision: '单件成本 | 设备稳定性 | 耗材开放性'
+            },
+            {
+                name: '硬核创客',
+                nameEn: 'Hardcore Makers',
+                percent: '20%',
+                ltv: '低',
+                price: '高',
+                priceRange: '<$2K',
+                quote: 'The tech is cool but my Prusa already does multicolor. Convince me why full-color is worth 3x the price.',
+                pain: '现有方案(MMU/Palette)色彩切换效率低',
+                scene: '复杂模型制作 / 技术尝鲜',
+                decision: '技术开放性 | 社区生态 | 性价比'
             }
-        };
+        ];
 
-        // ==================== 数据层 ====================
+        // ==================== 加载数据 ====================
         async function loadData() {
-            DOM.status.textContent = '同步中...';
+            document.getElementById('data-status').textContent = '同步中...';
             
             try {
                 const { data, error } = await supabaseClient
                     .from('user_voices')
-                    .select(`
-                        id, text, source, source_created_at,
-                        emotion, type, persona, price_sensitivity,
-                        pain_points, use_case, decision_factors, risk_level,
-                        is_valid, created_at
-                    `)
+                    .select('*')
                     .order('source_created_at', { ascending: false });
 
                 if (error) throw error;
                 
-                State.data = data || [];
-                DOM.status.textContent = `已同步 ${State.data.length} 条数据 · ${new Date().toLocaleTimeString()}`;
-                updateStats();
-                render();
+                allData = data || [];
+                document.getElementById('data-status').textContent = `已同步 ${allData.length} 条数据 · ${new Date().toLocaleTimeString()}`;
+                document.getElementById('footer-time').textContent = new Date().toLocaleDateString();
+                
+                updateEmotionStats();
+                renderPersonas();
+                renderVoices();
             } catch (err) {
-                DOM.status.textContent = '连接失败: ' + err.message;
+                document.getElementById('data-status').textContent = '连接失败: ' + err.message;
                 console.error(err);
             }
         }
 
-        function updateStats() {
-            DOM.counts.total.textContent = State.data.length;
-            DOM.counts.valid.textContent = State.data.filter(d => d.is_valid).length;
-            DOM.counts.risk.textContent = State.data.filter(d => d.risk_level === '高').length;
-            DOM.counts.time.textContent = new Date().toLocaleDateString();
+        // ==================== 更新情绪统计 ====================
+        function updateEmotionStats() {
+            const total = allData.length || 1;
+            const positive = allData.filter(d => d.emotion === 'positive').length;
+            const negative = allData.filter(d => d.emotion === 'negative').length;
+            const neutral = allData.filter(d => d.emotion === 'neutral').length;
+            
+            document.getElementById('positive-pct').textContent = Math.round(positive/total*100) + '%';
+            document.getElementById('neutral-pct').textContent = Math.round(neutral/total*100) + '%';
+            document.getElementById('negative-pct').textContent = Math.round(negative/total*100) + '%';
         }
 
-        // ==================== 渲染层 ====================
-        function render() {
-            const filtered = State.data.filter(item => {
-                const matchValidity = State.filter === 'all' ? true : 
-                                     State.filter === 'valid' ? item.is_valid : 
-                                     !item.is_valid;
-                const matchPersona = State.persona === 'all' ? true : item.persona === State.persona;
-                return matchValidity && matchPersona;
-            });
-
-            if (filtered.length === 0) {
-                DOM.container.innerHTML = '';
-                DOM.empty.classList.remove('hidden');
-                return;
-            }
-
-            DOM.empty.classList.add('hidden');
-            DOM.container.innerHTML = filtered.map(item => createCard(item)).join('');
-        }
-
-        function createCard(item) {
-            const isValid = item.is_valid;
-            const borderClass = !isValid ? 'invalid-border' : 
-                               item.risk_level === '高' ? 'risk-border' : 'quote-border';
-            
-            const validityBadge = isValid 
-                ? '<span class="px-2 py-1 bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/30 rounded text-xs font-bold">有效</span>'
-                : '<span class="px-2 py-1 bg-gray-800 text-gray-500 border border-gray-700 rounded text-xs">无效</span>';
-            
-            const riskBadge = item.risk_level === '高' 
-                ? '<span class="px-2 py-1 tag-risk rounded text-xs">高风险</span>' : '';
-            
-            const emotionColor = item.emotion === 'positive' ? 'text-green-400' : 
-                                item.emotion === 'negative' ? 'text-red-400' : 'text-gray-400';
-            
-            const painHtml = item.pain_points 
-                ? `<div class="mt-3 p-3 bg-red-950/20 border border-red-900/30 rounded-lg">
-                     <span class="text-xs text-red-400 uppercase tracking-wider block mb-1">痛点</span>
-                     <span class="text-sm text-gray-200">${item.pain_points}</span>
-                   </div>` : '';
-            
-            const useCaseHtml = item.use_case 
-                ? `<div class="mt-3 p-3 bg-blue-950/20 border border-blue-900/30 rounded-lg">
-                     <span class="text-xs text-blue-400 uppercase tracking-wider block mb-1">使用场景</span>
-                     <span class="text-sm text-gray-200">${item.use_case}</span>
-                   </div>` : '';
-            
-            const decisionHtml = item.decision_factors 
-                ? `<div class="mt-3 p-3 bg-[#CCFF00]/5 border border-[#CCFF00]/20 rounded-lg">
-                     <span class="text-xs text-[#CCFF00] uppercase tracking-wider block mb-1">决策因子</span>
-                     <span class="text-sm text-gray-200">${item.decision_factors}</span>
-                   </div>` : '';
-
-            return `
-            <div class="card rounded-xl p-4 md:p-6 ${borderClass}">
-                <div class="flex flex-wrap gap-2 mb-4 items-center">
-                    ${validityBadge}
-                    ${riskBadge}
-                    <span class="px-2 py-1 bg-gray-800 text-gray-300 border border-gray-600 rounded text-xs">${item.persona || '未分类'}</span>
-                    <span class="px-2 py-1 bg-gray-900 rounded text-xs ${emotionColor}">${item.emotion}</span>
-                    <span class="text-xs text-gray-600 ml-auto">${new Date(item.source_created_at).toLocaleString('zh-CN', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})}</span>
-                </div>
-                
-                <div class="bg-black/30 rounded-lg p-4 mb-4">
-                    <p class="text-gray-200 leading-relaxed text-sm md:text-base">"${escapeHtml(item.text)}"</p>
-                    <div class="text-xs text-gray-500 mt-2">来源: ${item.source}</div>
-                </div>
-
-                <div class="grid md:grid-cols-3 gap-3">
-                    ${painHtml}
-                    ${useCaseHtml}
-                    ${decisionHtml}
-                </div>
-                
-                ${item.price_sensitivity ? `
-                <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-800">
-                    <span class="text-xs text-gray-500">价格敏感度</span>
-                    <div class="flex gap-1">
-                        ${[1,2,3].map(i => `<div class="w-2 h-2 rounded-full ${i <= (item.price_sensitivity === '高' ? 3 : item.price_sensitivity === '中' ? 2 : 1) ? 'bg-[#CCFF00]' : 'bg-gray-700'}"></div>`).join('')}
+        // ==================== 渲染画像 ====================
+        function renderPersonas() {
+            const container = document.getElementById('persona-container');
+            container.innerHTML = personaTemplates.map(p => `
+                <div class="persona-card bg-gray-900/30 rounded-lg p-5">
+                    <div class="flex flex-col md:flex-row justify-between gap-4 mb-4">
+                        <div>
+                            <h3 class="font-bold text-lg mb-2">${p.name} / ${p.nameEn}</h3>
+                            <div class="flex flex-wrap gap-2 text-xs font-mono">
+                                <span class="px-2 py-1 bg-gray-800 rounded text-gray-300">占比${p.percent}</span>
+                                <span class="px-2 py-1 bg-gray-800 rounded text-gray-300">LTV${p.ltv}</span>
+                                <span class="px-2 py-1 ${p.price === '高' ? 'bg-red-900/50 text-red-400' : 'bg-lemon text-black'} rounded">${p.price === '高' ? '价格敏感度高' : p.price === '中' ? '价格敏感度中' : '价格敏感度低'}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold lemon">${p.priceRange}</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider">可接受价位</div>
+                        </div>
                     </div>
-                    <span class="text-xs text-gray-400">${item.price_sensitivity}</span>
-                </div>` : ''}
-            </div>
-            `;
+                    <div class="mb-4 p-3 bg-black/30 rounded border-l-2 border-gray-700">
+                        <p class="text-sm text-gray-300 italic">"${p.quote}"</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-4 pt-4 border-t border-gray-800 text-sm">
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1 uppercase tracking-wider">核心痛点</span>
+                            <span class="text-white">${p.pain}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1 uppercase tracking-wider">使用场景</span>
+                            <span class="text-white">${p.scene}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1 uppercase tracking-wider">决策关键因子</span>
+                            <span class="lemon">${p.decision}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== 渲染原话 ====================
+        function renderVoices() {
+            // 根据筛选条件过滤
+            let filtered = allData;
+            if (currentFilter === 'valid') filtered = allData.filter(d => d.is_valid);
+            if (currentFilter === 'invalid') filtered = allData.filter(d => !d.is_valid);
+            
+            // 正面原话（取前3条）
+            const positive = filtered.filter(d => d.emotion === 'positive' || (d.type === 'voice' && d.emotion !== 'negative')).slice(0, 3);
+            document.getElementById('positive-voices').innerHTML = positive.map(item => `
+                <div class="quote-border bg-gray-900/20 rounded-lg p-4">
+                    <p class="text-gray-200 italic mb-3 text-sm md:text-base">"${escapeHtml(item.text)}"</p>
+                    <div class="flex flex-wrap gap-2 mb-3 text-xs">
+                        <span class="px-2 py-1 bg-gray-800 rounded text-gray-400">场景：${item.use_case || '未分类'}</span>
+                        <span class="px-2 py-1 bg-gray-800 rounded lemon">情绪：${getEmotionText(item.emotion)}</span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-3 text-sm pt-3 border-t border-gray-800">
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1">用户原话指向</span>
+                            <span class="text-white">${item.pain_points || '无明确指向'}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1">产品能力归因</span>
+                            <span class="lemon">${item.decision_factors || '待分析'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-gray-500 text-center py-8">暂无数据</p>';
+
+            // 负面/风险原话（取前3条高风险）
+            const negative = filtered.filter(d => d.emotion === 'negative' || d.risk_level === '高' || d.type === 'risk').slice(0, 3);
+            document.getElementById('negative-voices').innerHTML = negative.map(item => `
+                <div class="risk-border bg-red-950/10 rounded-lg p-4">
+                    <p class="text-gray-200 italic mb-3 text-sm md:text-base">"${escapeHtml(item.text)}"</p>
+                    <div class="flex flex-wrap gap-2 mb-3 text-xs">
+                        <span class="px-2 py-1 bg-gray-900 rounded text-gray-400">场景：${item.use_case || '未分类'}</span>
+                        <span class="px-2 py-1 bg-gray-900 rounded text-red-400">情绪：${getEmotionText(item.emotion)}</span>
+                        ${item.risk_level ? `<span class="px-2 py-1 tag-red rounded">风险等级：${item.risk_level}</span>` : ''}
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-3 text-sm pt-3 border-t border-gray-800">
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1">用户原话指向</span>
+                            <span class="text-white">${item.pain_points || '无明确指向'}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1">产品能力归因</span>
+                            <span class="text-red-400">${item.decision_factors || '待分析'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-gray-500 text-center py-8">暂无风险数据</p>';
+        }
+
+        function getEmotionText(e) {
+            const map = { positive: '正面', negative: '负面', neutral: '中性' };
+            return map[e] || e;
         }
 
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // ==================== 交互层 ====================
-        function setupEventListeners() {
-            // 有效性筛选
+        // ==================== 筛选交互 ====================
+        function setupFilters() {
             document.getElementById('btn-all').addEventListener('click', () => setFilter('all'));
             document.getElementById('btn-valid').addEventListener('click', () => setFilter('valid'));
             document.getElementById('btn-invalid').addEventListener('click', () => setFilter('invalid'));
-
-            // 画像筛选
-            document.querySelectorAll('.persona-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const persona = e.target.dataset.persona;
-                    setPersona(persona);
-                });
-            });
         }
 
         function setFilter(type) {
-            State.filter = type;
+            currentFilter = type;
             
-            // 更新按钮样式
-            const buttons = {
-                'all': document.getElementById('btn-all'),
-                'valid': document.getElementById('btn-valid'),
-                'invalid': document.getElementById('btn-invalid')
-            };
-            
-            Object.keys(buttons).forEach(key => {
-                const btn = buttons[key];
+            ['all', 'valid', 'invalid'].forEach(key => {
+                const btn = document.getElementById(`btn-${key}`);
                 if (key === type) {
                     btn.classList.remove('bg-gray-800', 'text-gray-400');
                     btn.classList.add('bg-lemon', 'text-black');
@@ -282,27 +399,11 @@
                 }
             });
             
-            render();
-        }
-
-        function setPersona(persona) {
-            State.persona = persona;
-            
-            document.querySelectorAll('.persona-btn').forEach(btn => {
-                if (btn.dataset.persona === persona) {
-                    btn.classList.remove('tag-gray');
-                    btn.classList.add('bg-lemon', 'text-black', 'tag');
-                } else {
-                    btn.classList.remove('bg-lemon', 'text-black', 'tag');
-                    btn.classList.add('tag-gray');
-                }
-            });
-            
-            render();
+            renderVoices();
         }
 
         // ==================== 启动 ====================
-        setupEventListeners();
+        setupFilters();
         loadData();
         setInterval(loadData, 30000);
     </script>
