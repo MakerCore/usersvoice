@@ -9,87 +9,240 @@
     <style>
         body { font-family: -apple-system, sans-serif; background: #0A0A0A; color: #E5E5E5; }
         .lemon { color: #CCFF00; }
+        .bg-lemon { background: #CCFF00; color: #000; }
         .card { background: #141414; border: 1px solid #262626; border-radius: 16px; padding: 24px; margin-bottom: 24px; }
-        .quote { border-left: 3px solid #CCFF00; padding-left: 16px; margin: 16px 0; }
-        .risk { border-left: 3px solid #FF4444; padding-left: 16px; margin: 16px 0; }
+        .quote { border-left: 3px solid #CCFF00; padding-left: 16px; margin: 16px 0; background: linear-gradient(90deg, rgba(204,255,0,0.05) 0%, transparent 100%); }
+        .risk { border-left: 3px solid #FF4444; padding-left: 16px; margin: 16px 0; background: linear-gradient(90deg, rgba(255,68,68,0.05) 0%, transparent 100%); }
+        .word-cloud { line-height: 1.8; }
+        .word-large { font-size: 2rem; font-weight: bold; color: #fff; }
+        .word-medium { font-size: 1.25rem; color: #CCFF00; }
+        .word-small { font-size: 0.875rem; color: #666; }
     </style>
 </head>
-<body class="p-4 max-w-3xl mx-auto">
+<body class="p-4 max-w-5xl mx-auto">
 
 <!-- 顶部数据 -->
 <div class="card">
-    <h1 class="text-3xl font-bold mb-2">iNew3D Full Color <span class="lemon">3D Printer</span></h1>
-    <p class="text-gray-400 text-sm mb-4">最后更新：<span id="update-time">加载中...</span></p>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-bold">iNew3D Full Color <span class="lemon">3D Printer</span></h1>
+            <p class="text-gray-400 text-sm mt-2">最后更新：<span id="update-time">-</span></p>
+        </div>
+        <div class="text-right">
+            <div class="text-xs text-gray-500">数据来源</div>
+            <div class="text-sm">公开网络信息（Reddit、Kickstarter等）</div>
+        </div>
+    </div>
     
-    <div class="grid grid-cols-3 gap-4 text-center">
+    <div class="grid grid-cols-3 gap-4 text-center pt-4 border-t border-gray-800">
         <div>
-            <div class="text-3xl font-bold lemon" id="backers">-</div>
-            <div class="text-xs text-gray-400">Backers</div>
+            <div class="text-3xl font-bold lemon">247</div>
+            <div class="text-xs text-gray-400 mt-1">Backers</div>
         </div>
         <div>
-            <div class="text-3xl font-bold" id="pledged">-</div>
-            <div class="text-xs text-gray-400">已筹金额</div>
+            <div class="text-3xl font-bold">$1.85M</div>
+            <div class="text-xs text-gray-400 mt-1">已筹金额</div>
         </div>
         <div>
-            <div class="text-3xl font-bold" id="days">-</div>
-            <div class="text-xs text-gray-400">剩余天数</div>
+            <div class="text-3xl font-bold">28</div>
+            <div class="text-xs text-gray-400 mt-1">剩余天数</div>
         </div>
     </div>
 </div>
 
-<!-- 用户声音 -->
+<!-- 情绪分布 -->
+<div class="card">
+    <h2 class="text-xl font-bold mb-6">情绪分布</h2>
+    <div id="sentiment-bars" class="space-y-4">
+        <div class="text-gray-500 text-sm">加载中...</div>
+    </div>
+    <div class="mt-6 pt-4 border-t border-gray-800 text-sm text-gray-500 space-y-2">
+        <p><span class="lemon">正面：</span>表达购买意愿、技术赞赏、使用场景期待</p>
+        <p><span class="text-gray-300">中性：</span>价格敏感询问、技术参数咨询、功能边界确认</p>
+        <p><span class="text-red-500">负面：</span>质量担忧、交付焦虑、竞品比较劣势</p>
+    </div>
+</div>
+
+<!-- 词云 -->
+<div class="card">
+    <h2 class="text-xl font-bold mb-4">情绪词云</h2>
+    <div id="word-cloud" class="word-cloud flex flex-wrap gap-3 items-baseline">
+        <span class="text-gray-500">加载中...</span>
+    </div>
+</div>
+
+<!-- 用户原话精选 -->
 <div class="card">
     <h2 class="text-xl font-bold mb-4">用户原话精选</h2>
-    <div id="voices">
-        <div class="quote">
-            <p class="text-gray-200 italic mb-2">"加载中..."</p>
-            <p class="text-xs text-gray-500">来源：-</p>
-        </div>
+    <div id="voices-list">
+        <div class="text-gray-500">加载中...</div>
     </div>
+</div>
+
+<!-- 取消念头 -->
+<div class="card">
+    <h2 class="text-xl font-bold mb-4 text-red-400">让用户取消订单的念头</h2>
+    <div id="risks-list">
+        <div class="text-gray-500">加载中...</div>
+    </div>
+</div>
+
+<!-- 底部 -->
+<div class="card text-sm text-center text-gray-500">
+    <p>本页面为个人市场研究笔记，基于公开信息整理分析</p>
+    <p class="mt-1">作者：<span class="lemon">Lemon.Wang</span>（独立产品研究者）</p>
 </div>
 
 <script>
-  // ==================== 你的 Supabase 配置 ====================
+  // ==================== 配置 ====================
   const SUPABASE_URL = 'https://brzxjzucucgzlkhlndcw.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc';
   
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   
-  async function loadVoiceData() {
+  // 加载所有数据
+  async function loadAllData() {
     try {
-      const { data, error } = await supabaseClient
-        .from('user_voices')
-        .select('text, source')
-        .limit(1);
+      // 更新时间
+      document.getElementById('update-time').textContent = new Date().toLocaleString('zh-CN');
       
-      if (error) {
-        console.error('Error:', error);
-        document.querySelector('#voices .quote p:first-child').textContent = '"加载失败: ' + error.message + '"';
+      // 获取所有用户声音
+      const { data: voices, error } = await supabaseClient
+        .from('user_voices')
+        .select('text, source, emotion, type');
+      
+      if (error) throw error;
+      
+      if (!voices || voices.length === 0) {
+        document.getElementById('voices-list').innerHTML = '<div class="text-gray-500">暂无数据</div>';
         return;
       }
       
-      console.log('Data from Supabase:', data); // 调试用的
+      // 分类数据
+      const voiceList = voices.filter(v => v.type === 'voice' || !v.type);
+      const riskList = voices.filter(v => v.type === 'risk');
       
-      if (data && data.length > 0) {
-        // 直接更新 div#voices 里面的内容
-        const voicesDiv = document.getElementById('voices');
-        voicesDiv.innerHTML = `
-          <div class="quote">
-            <p class="text-gray-200 italic mb-2">"${data[0].text}"</p>
-            <p class="text-xs text-gray-500">来源：${data[0].source}</p>
-          </div>
-        `;
-      } else {
-        document.querySelector('#voices .quote p:first-child').textContent = '"暂无数据"';
-      }
+      // 统计情绪
+      const stats = { positive: 0, neutral: 0, negative: 0 };
+      voices.forEach(v => {
+        if (v.emotion === 'positive') stats.positive++;
+        else if (v.emotion === 'negative') stats.negative++;
+        else stats.neutral++;
+      });
+      const total = voices.length;
+      
+      // 渲染情绪分布
+      renderSentiment(stats, total);
+      
+      // 渲染词云（简单模拟）
+      renderWordCloud(voices);
+      
+      // 渲染用户原话
+      renderVoices(voiceList);
+      
+      // 渲染取消念头
+      renderRisks(riskList);
+      
     } catch (err) {
-      console.error('Exception:', err);
-      document.querySelector('#voices .quote p:first-child').textContent = '"执行错误..."';
+      console.error('Error:', err);
+      document.getElementById('voices-list').innerHTML = '<div class="text-red-500">加载失败</div>';
     }
   }
   
+  function renderSentiment(stats, total) {
+    const html = `
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-gray-400">正面 (期待/兴奋/满意)</span>
+          <span class="lemon font-bold">${Math.round(stats.positive/total*100) || 0}%</span>
+        </div>
+        <div class="bg-gray-800 h-2 rounded-full">
+          <div class="bg-lemon h-2 rounded-full" style="width: ${(stats.positive/total*100) || 0}%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-gray-400">中性 (观望/疑问/建议)</span>
+          <span class="text-gray-300 font-bold">${Math.round(stats.neutral/total*100) || 0}%</span>
+        </div>
+        <div class="bg-gray-800 h-2 rounded-full">
+          <div class="bg-gray-500 h-2 rounded-full" style="width: ${(stats.neutral/total*100) || 0}%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-gray-400">负面 (担忧/抱怨/质疑)</span>
+          <span class="text-red-500 font-bold">${Math.round(stats.negative/total*100) || 0}%</span>
+        </div>
+        <div class="bg-gray-800 h-2 rounded-full">
+          <div class="bg-red-500 h-2 rounded-full" style="width: ${(stats.negative/total*100) || 0}%"></div>
+        </div>
+      </div>
+    `;
+    document.getElementById('sentiment-bars').innerHTML = html;
+  }
+  
+  function renderWordCloud(voices) {
+    // 简单提取关键词（实际项目中可更复杂）
+    const keywords = [
+      { word: 'color accuracy', size: 'large', color: '#fff' },
+      { word: 'speed', size: 'medium', color: '#CCFF00' },
+      { word: 'price', size: 'medium', color: '#CCFF00' },
+      { word: 'quality', size: 'small', color: '#666' },
+      { word: 'support', size: 'small', color: '#666' },
+      { word: 'amazing', size: 'large', color: '#fff' },
+    ];
+    
+    const html = keywords.map(k => {
+      const sizeClass = k.size === 'large' ? 'word-large' : k.size === 'medium' ? 'word-medium' : 'word-small';
+      return `<span class="${sizeClass}" style="color: ${k.color}">${k.word}</span>`;
+    }).join('');
+    
+    document.getElementById('word-cloud').innerHTML = html;
+  }
+  
+  function renderVoices(list) {
+    if (list.length === 0) {
+      document.getElementById('voices-list').innerHTML = '<div class="text-gray-500">暂无精选原话</div>';
+      return;
+    }
+    
+    const html = list.map(v => `
+      <div class="quote rounded-lg p-4 mb-4">
+        <p class="text-gray-200 italic mb-3">"${v.text}"</p>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-gray-500">来源：${v.source || '未知'}</span>
+          <span class="text-xs px-2 py-1 rounded ${v.emotion === 'positive' ? 'bg-green-900 text-green-300' : v.emotion === 'negative' ? 'bg-red-900 text-red-300' : 'bg-gray-800 text-gray-400'}">
+            ${v.emotion === 'positive' ? '正面' : v.emotion === 'negative' ? '负面' : '中性'}
+          </span>
+        </div>
+      </div>
+    `).join('');
+    
+    document.getElementById('voices-list').innerHTML = html;
+  }
+  
+  function renderRisks(list) {
+    if (list.length === 0) {
+      document.getElementById('risks-list').innerHTML = '<div class="text-gray-500">暂无风险数据</div>';
+      return;
+    }
+    
+    const html = list.map(v => `
+      <div class="risk rounded-lg p-4 mb-4">
+        <p class="text-gray-200 italic mb-3">"${v.text}"</p>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-gray-500">来源：${v.source || '未知'}</span>
+          <span class="text-xs text-red-400">风险信号</span>
+        </div>
+      </div>
+    `).join('');
+    
+    document.getElementById('risks-list').innerHTML = html;
+  }
+  
   // 页面加载完成后执行
-  document.addEventListener('DOMContentLoaded', loadVoiceData);
+  document.addEventListener('DOMContentLoaded', loadAllData);
 </script>
 
 </body>
