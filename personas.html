@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全部画像 | iNew3D User Voice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0A0A0A; color: #E5E5E5; }
+        .lemon { color: #CCFF00; }
+        .bg-lemon { background: #CCFF00; color: #000; }
+        .card { background: #141414; border: 1px solid #262626; }
+    </style>
+</head>
+<body class="min-h-screen p-3 md:p-6 max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <div class="card rounded-2xl p-4 md:p-6 mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <a href="index.html" class="text-gray-500 text-sm hover:text-[#CCFF00] mb-2 inline-block">← 返回首页</a>
+                <h1 class="text-2xl md:text-4xl font-bold">全部用户画像</h1>
+                <p class="text-gray-400 mt-2 text-sm">基于数据库实时统计的所有画像类型</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 画像列表 -->
+    <div id="persona-list" class="space-y-6 mb-6">
+        <div class="card rounded-2xl p-12 text-center text-gray-500">加载中...</div>
+    </div>
+
+    <!-- 底部 -->
+    <div class="card rounded-2xl p-6 text-sm text-center">
+        <p class="text-gray-500">数据来源：公开网络信息 | 作者：<span class="lemon">Lemon.Wang</span></p>
+    </div>
+
+    <script>
+        const CONFIG = {
+            SUPABASE_URL: 'https://brzxjzucucgzlkhlndcw.supabase.co',
+            SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc'
+        };
+        const supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+
+        async function loadAllPersonas() {
+            const { data, error } = await supabaseClient.from('user_voices').select('*');
+            if (error) return document.getElementById('persona-list').innerHTML = '<div class="text-red-500">加载失败</div>';
+            
+            const stats = {};
+            data.forEach(d => { if (d.persona) stats[d.persona] = (stats[d.persona] || 0) + 1; });
+            const total = data.length || 1;
+            const sorted = Object.entries(stats).sort((a,b) => b[1]-a[1]);
+            
+            if (sorted.length === 0) return document.getElementById('persona-list').innerHTML = '<div class="text-gray-500">暂无画像数据</div>';
+            
+            document.getElementById('persona-list').innerHTML = sorted.map(([name, count]) => {
+                const pct = Math.round((count/total)*100);
+                const samples = data.filter(d => d.persona === name).slice(0, 3); // 取3条示例
+                const avgPrice = samples.find(d => d.price_sensitivity)?.price_sensitivity || '中';
+                
+                return `<div class="card rounded-2xl p-6 border-t-4 border-[#CCFF00]">
+                    <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-2">${name}</h2>
+                            <div class="flex gap-2 text-sm">
+                                <span class="px-3 py-1 bg-gray-800 rounded-full">占比 ${pct}%</span>
+                                <span class="px-3 py-1 ${avgPrice === '高' ? 'bg-red-900/50 text-red-400' : avgPrice === '低' ? 'bg-lemon text-black' : 'bg-gray-700'} rounded-full">价格敏感度${avgPrice}</span>
+                                <span class="px-3 py-1 bg-gray-800 rounded-full text-gray-400">${count} 条数据</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4 mb-6">
+                        ${samples.map(s => `<div class="bg-black/30 rounded p-4 border-l-2 border-gray-700"><p class="text-gray-300 italic text-sm">"${s.text?.substring(0,200)}${s.text?.length > 200 ? '...' : ''}"</p></div>`).join('')}
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-6 pt-6 border-t border-gray-800">
+                        <div>
+                            <h4 class="text-gray-500 text-xs uppercase mb-2">主要痛点</h4>
+                            <div class="text-sm text-white">${[...new Set(samples.map(s => s.pain_points).filter(Boolean))].join('、') || '数据收集中'}</div>
+                        </div>
+                        <div>
+                            <h4 class="text-gray-500 text-xs uppercase mb-2">使用场景</h4>
+                            <div class="text-sm text-white">${[...new Set(samples.map(s => s.use_case).filter(Boolean))].join('、') || '数据收集中'}</div>
+                        </div>
+                        <div>
+                            <h4 class="text-gray-500 text-xs uppercase mb-2">决策因子</h4>
+                            <div class="text-sm lemon">${[...new Set(samples.map(s => s.decision_factors).filter(Boolean))].join('、') || '数据收集中'}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        loadAllPersonas();
+    </script>
+</body>
+</html>
