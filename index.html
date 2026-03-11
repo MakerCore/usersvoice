@@ -21,33 +21,27 @@
         .tag { background: rgba(204, 255, 0, 0.1); color: #CCFF00; border: 1px solid rgba(204, 255, 0, 0.3); }
         .tag-gray { background: #1A1A1A; color: #888; border: 1px solid #333; }
         .tag-risk { background: rgba(255, 68, 68, 0.1); color: #FF4444; border: 1px solid rgba(255, 68, 68, 0.3); }
-        .null-state { color: #444; font-style: italic; }
-        .loading { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0A0A0A; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #444; }
     </style>
 </head>
 <body class="min-h-screen p-3 md:p-6 max-w-7xl mx-auto">
 
-    <!-- Header -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
         <div class="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
             <div>
                 <h1 class="text-2xl md:text-4xl font-bold leading-tight">iNew3D <span class="lemon">User Voice</span></h1>
                 <p class="text-gray-400 mt-2 text-sm md:text-base">用户声音数据面板 · 归因分析系统</p>
-                <p class="text-xs text-gray-600 mt-1" id="data-status">连接中...</p>
+                <p class="text-xs text-gray-600 mt-1" id="data-status">初始化...</p>
             </div>
             <div class="flex gap-2 flex-wrap">
-                <button onclick="filterData('all')" class="filter-btn bg-lemon px-4 py-2 rounded-lg font-bold text-sm" data-filter="all">全部</button>
-                <button onclick="filterData('valid')" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400" data-filter="valid">有效数据</button>
-                <button onclick="filterData('invalid')" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400" data-filter="invalid">无效数据</button>
+                <button id="btn-all" class="filter-btn bg-lemon px-4 py-2 rounded-lg font-bold text-sm">全部</button>
+                <button id="btn-valid" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400">有效数据</button>
+                <button id="btn-invalid" class="filter-btn px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-gray-400">无效数据</button>
             </div>
         </div>
         
-        <!-- Stats Grid -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-gray-800">
             <div class="text-center p-3 bg-black/30 rounded-lg">
                 <div class="text-2xl md:text-3xl font-bold lemon" id="total-count">-</div>
@@ -68,184 +62,218 @@
         </div>
     </div>
 
-    <!-- Persona Filter -->
     <div class="card rounded-2xl p-4 md:p-6 mb-6">
         <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">画像筛选</h3>
         <div class="flex flex-wrap gap-2" id="persona-filters">
-            <button onclick="filterByPersona('all')" class="persona-btn tag px-3 py-1 rounded-full text-xs font-medium bg-lemon text-black" data-persona="all">全部画像</button>
-            <button onclick="filterByPersona('专业产品设计师')" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium" data-persona="专业产品设计师">专业产品设计师</button>
-            <button onclick="filterByPersona('创意工作室主理人')" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium" data-persona="创意工作室主理人">创意工作室主理人</button>
-            <button onclick="filterByPersona('教育用户')" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium" data-persona="教育用户">教育用户</button>
-            <button onclick="filterByPersona('硬核创客')" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium" data-persona="硬核创客">硬核创客</button>
-            <button onclick="filterByPersona('个人爱好')" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium" data-persona="个人爱好">个人爱好</button>
-            <button onclick="filterByPersona('其他')" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium" data-persona="其他">其他</button>
+            <button data-persona="all" class="persona-btn tag px-3 py-1 rounded-full text-xs font-medium bg-lemon text-black">全部画像</button>
+            <button data-persona="专业产品设计师" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">专业产品设计师</button>
+            <button data-persona="创意工作室主理人" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">创意工作室主理人</button>
+            <button data-persona="教育用户" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">教育用户</button>
+            <button data-persona="硬核创客" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">硬核创客</button>
+            <button data-persona="个人爱好" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">个人爱好</button>
+            <button data-persona="其他" class="persona-btn tag-gray px-3 py-1 rounded-full text-xs font-medium">其他</button>
         </div>
     </div>
 
-    <!-- Data List -->
     <div id="data-container" class="space-y-4">
-        <div class="card rounded-2xl p-12 text-center loading">
+        <div class="card rounded-2xl p-12 text-center">
             <div class="text-2xl text-gray-600">加载中...</div>
         </div>
     </div>
 
-    <!-- Empty State -->
     <div id="empty-state" class="hidden card rounded-2xl p-12 text-center">
         <div class="text-4xl mb-4">📭</div>
         <h3 class="text-lg font-bold text-gray-400">暂无匹配数据</h3>
-        <p class="text-sm text-gray-600 mt-2">请调整筛选条件</p>
     </div>
 
     <script>
-        // ==================== 配置区域 ====================
-        // 替换为你的 Supabase 项目配置
-        const SUPABASE_URL = 'https://brzxjzucucgzlkhlndcw.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        // ==================== 全局状态 ====================
-        let allData = [];
-        let currentFilter = 'all'; // all | valid | invalid
-        let currentPersona = 'all';
-        
-        // ==================== 数据获取 ====================
-        async function fetchData() {
-            document.getElementById('data-status').textContent = '同步中...';
-            
-            const { data, error } = await supabase
-                .from('user_voices')
-                .select(`
-                    id, text, source, source_created_at,
-                    emotion, type, persona, price_sensitivity,
-                    pain_points, use_case, decision_factors, risk_level,
-                    is_valid, created_at
-                `)
-                .order('source_created_at', { ascending: false });
-            
-            if (error) {
-                console.error('Error:', error);
-                document.getElementById('data-status').textContent = '连接失败: ' + error.message;
-                return;
+        // ==================== 配置 ====================
+        const CONFIG = {
+            SUPABASE_URL: 'https://brzxjzucucgzlkhlndcw.supabase.co',
+            SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc'
+        };
+
+        // ==================== 初始化 Supabase ====================
+        const supabaseClient = window.supabase.createClient(
+            CONFIG.SUPABASE_URL, 
+            CONFIG.SUPABASE_KEY
+        );
+
+        // ==================== 状态管理 ====================
+        const State = {
+            data: [],
+            filter: 'all', // all | valid | invalid
+            persona: 'all'
+        };
+
+        // ==================== DOM 元素 ====================
+        const DOM = {
+            status: document.getElementById('data-status'),
+            container: document.getElementById('data-container'),
+            empty: document.getElementById('empty-state'),
+            counts: {
+                total: document.getElementById('total-count'),
+                valid: document.getElementById('valid-count'),
+                risk: document.getElementById('risk-count'),
+                time: document.getElementById('update-time')
             }
+        };
+
+        // ==================== 数据层 ====================
+        async function loadData() {
+            DOM.status.textContent = '同步中...';
             
-            allData = data || [];
-            document.getElementById('data-status').textContent = `已同步 ${allData.length} 条数据 · ${new Date().toLocaleTimeString()}`;
-            renderData();
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_voices')
+                    .select(`
+                        id, text, source, source_created_at,
+                        emotion, type, persona, price_sensitivity,
+                        pain_points, use_case, decision_factors, risk_level,
+                        is_valid, created_at
+                    `)
+                    .order('source_created_at', { ascending: false });
+
+                if (error) throw error;
+                
+                State.data = data || [];
+                DOM.status.textContent = `已同步 ${State.data.length} 条数据 · ${new Date().toLocaleTimeString()}`;
+                updateStats();
+                render();
+            } catch (err) {
+                DOM.status.textContent = '连接失败: ' + err.message;
+                console.error(err);
+            }
         }
-        
-        // ==================== 渲染逻辑 ====================
-        function renderData() {
-            const container = document.getElementById('data-container');
-            const emptyState = document.getElementById('empty-state');
-            
-            // 筛选逻辑
-            let filtered = allData.filter(item => {
-                const matchValidity = currentFilter === 'all' ? true : 
-                                     currentFilter === 'valid' ? item.is_valid : 
+
+        function updateStats() {
+            DOM.counts.total.textContent = State.data.length;
+            DOM.counts.valid.textContent = State.data.filter(d => d.is_valid).length;
+            DOM.counts.risk.textContent = State.data.filter(d => d.risk_level === '高').length;
+            DOM.counts.time.textContent = new Date().toLocaleDateString();
+        }
+
+        // ==================== 渲染层 ====================
+        function render() {
+            const filtered = State.data.filter(item => {
+                const matchValidity = State.filter === 'all' ? true : 
+                                     State.filter === 'valid' ? item.is_valid : 
                                      !item.is_valid;
-                const matchPersona = currentPersona === 'all' ? true : item.persona === currentPersona;
+                const matchPersona = State.persona === 'all' ? true : item.persona === State.persona;
                 return matchValidity && matchPersona;
             });
-            
-            // 更新统计
-            document.getElementById('total-count').textContent = allData.length;
-            document.getElementById('valid-count').textContent = allData.filter(d => d.is_valid).length;
-            document.getElementById('risk-count').textContent = allData.filter(d => d.risk_level === '高').length;
-            document.getElementById('update-time').textContent = new Date().toLocaleDateString();
-            
-            if (filtered.length === 0) {
-                container.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
-            
-            // 渲染卡片
-            container.innerHTML = filtered.map((item, index) => {
-                const isValid = item.is_valid;
-                const borderClass = !isValid ? 'invalid-border' : 
-                                   item.risk_level === '高' ? 'risk-border' : 'quote-border';
-                
-                // 标签生成
-                const validityBadge = isValid ? 
-                    `<span class="px-2 py-1 bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/30 rounded text-xs font-bold">有效</span>` :
-                    `<span class="px-2 py-1 bg-gray-800 text-gray-500 border border-gray-700 rounded text-xs">无效</span>`;
-                
-                const personaBadge = `<span class="px-2 py-1 bg-gray-800 text-gray-300 border border-gray-600 rounded text-xs">${item.persona || '未分类'}</span>`;
-                
-                const emotionColor = item.emotion === 'positive' ? 'text-green-400' : 
-                                    item.emotion === 'negative' ? 'text-red-400' : 'text-gray-400';
-                const emotionBadge = `<span class="px-2 py-1 bg-gray-900 rounded text-xs ${emotionColor}">${item.emotion}</span>`;
-                
-                const riskBadge = item.risk_level ? 
-                    `<span class="px-2 py-1 ${item.risk_level === '高' ? 'tag-risk' : 'tag-gray'} rounded text-xs">风险:${item.risk_level}</span>` : '';
-                
-                // 结构化数据展示
-                const painPointsHtml = item.pain_points ? 
-                    `<div class="mt-3 p-3 bg-red-950/20 border border-red-900/30 rounded-lg">
-                        <span class="text-xs text-red-400 uppercase tracking-wider block mb-1">痛点</span>
-                        <span class="text-sm text-gray-200">${item.pain_points}</span>
-                     </div>` : '';
-                
-                const useCaseHtml = item.use_case ? 
-                    `<div class="mt-3 p-3 bg-blue-950/20 border border-blue-900/30 rounded-lg">
-                        <span class="text-xs text-blue-400 uppercase tracking-wider block mb-1">使用场景</span>
-                        <span class="text-sm text-gray-200">${item.use_case}</span>
-                     </div>` : '';
-                
-                const decisionHtml = item.decision_factors ? 
-                    `<div class="mt-3 p-3 bg-[#CCFF00]/5 border border-[#CCFF00]/20 rounded-lg">
-                        <span class="text-xs text-[#CCFF00] uppercase tracking-wider block mb-1">决策因子</span>
-                        <span class="text-sm text-gray-200">${item.decision_factors}</span>
-                     </div>` : '';
-                
-                // 价格敏感度可视化
-                const priceIndicator = item.price_sensitivity ? 
-                    `<div class="flex items-center gap-2 mt-2">
-                        <span class="text-xs text-gray-500">价格敏感度</span>
-                        <div class="flex gap-1">
-                            ${Array(3).fill(0).map((_, i) => 
-                                `<div class="w-2 h-2 rounded-full ${i < (item.price_sensitivity === '高' ? 3 : item.price_sensitivity === '中' ? 2 : 1) ? 'bg-[#CCFF00]' : 'bg-gray-700'}"></div>`
-                            ).join('')}
-                        </div>
-                        <span class="text-xs text-gray-400">${item.price_sensitivity}</span>
-                     </div>` : '';
-                
-                return `
-                <div class="card rounded-xl p-4 md:p-6 ${borderClass}">
-                    <div class="flex flex-wrap gap-2 mb-4 items-center">
-                        ${validityBadge}
-                        ${personaBadge}
-                        ${emotionBadge}
-                        ${riskBadge}
-                        <span class="text-xs text-gray-600 ml-auto">${new Date(item.source_created_at).toLocaleString('zh-CN')}</span>
-                    </div>
-                    
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <p class="text-gray-200 leading-relaxed text-sm md:text-base">"${item.text}"</p>
-                        <div class="text-xs text-gray-500 mt-2">来源: ${item.source}</div>
-                    </div>
 
-                    <div class="grid md:grid-cols-3 gap-3">
-                        ${painPointsHtml}
-                        ${useCaseHtml}
-                        ${decisionHtml}
-                    </div>
-                    
-                    ${priceIndicator}
-                </div>
-                `;
-            }).join('');
+            if (filtered.length === 0) {
+                DOM.container.innerHTML = '';
+                DOM.empty.classList.remove('hidden');
+                return;
+            }
+
+            DOM.empty.classList.add('hidden');
+            DOM.container.innerHTML = filtered.map(item => createCard(item)).join('');
         }
-        
-        // ==================== 筛选交互 ====================
-        function filterData(type) {
-            currentFilter = type;
+
+        function createCard(item) {
+            const isValid = item.is_valid;
+            const borderClass = !isValid ? 'invalid-border' : 
+                               item.risk_level === '高' ? 'risk-border' : 'quote-border';
             
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.dataset.filter === type) {
+            const validityBadge = isValid 
+                ? '<span class="px-2 py-1 bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/30 rounded text-xs font-bold">有效</span>'
+                : '<span class="px-2 py-1 bg-gray-800 text-gray-500 border border-gray-700 rounded text-xs">无效</span>';
+            
+            const riskBadge = item.risk_level === '高' 
+                ? '<span class="px-2 py-1 tag-risk rounded text-xs">高风险</span>' : '';
+            
+            const emotionColor = item.emotion === 'positive' ? 'text-green-400' : 
+                                item.emotion === 'negative' ? 'text-red-400' : 'text-gray-400';
+            
+            const painHtml = item.pain_points 
+                ? `<div class="mt-3 p-3 bg-red-950/20 border border-red-900/30 rounded-lg">
+                     <span class="text-xs text-red-400 uppercase tracking-wider block mb-1">痛点</span>
+                     <span class="text-sm text-gray-200">${item.pain_points}</span>
+                   </div>` : '';
+            
+            const useCaseHtml = item.use_case 
+                ? `<div class="mt-3 p-3 bg-blue-950/20 border border-blue-900/30 rounded-lg">
+                     <span class="text-xs text-blue-400 uppercase tracking-wider block mb-1">使用场景</span>
+                     <span class="text-sm text-gray-200">${item.use_case}</span>
+                   </div>` : '';
+            
+            const decisionHtml = item.decision_factors 
+                ? `<div class="mt-3 p-3 bg-[#CCFF00]/5 border border-[#CCFF00]/20 rounded-lg">
+                     <span class="text-xs text-[#CCFF00] uppercase tracking-wider block mb-1">决策因子</span>
+                     <span class="text-sm text-gray-200">${item.decision_factors}</span>
+                   </div>` : '';
+
+            return `
+            <div class="card rounded-xl p-4 md:p-6 ${borderClass}">
+                <div class="flex flex-wrap gap-2 mb-4 items-center">
+                    ${validityBadge}
+                    ${riskBadge}
+                    <span class="px-2 py-1 bg-gray-800 text-gray-300 border border-gray-600 rounded text-xs">${item.persona || '未分类'}</span>
+                    <span class="px-2 py-1 bg-gray-900 rounded text-xs ${emotionColor}">${item.emotion}</span>
+                    <span class="text-xs text-gray-600 ml-auto">${new Date(item.source_created_at).toLocaleString('zh-CN', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})}</span>
+                </div>
+                
+                <div class="bg-black/30 rounded-lg p-4 mb-4">
+                    <p class="text-gray-200 leading-relaxed text-sm md:text-base">"${escapeHtml(item.text)}"</p>
+                    <div class="text-xs text-gray-500 mt-2">来源: ${item.source}</div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-3">
+                    ${painHtml}
+                    ${useCaseHtml}
+                    ${decisionHtml}
+                </div>
+                
+                ${item.price_sensitivity ? `
+                <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-800">
+                    <span class="text-xs text-gray-500">价格敏感度</span>
+                    <div class="flex gap-1">
+                        ${[1,2,3].map(i => `<div class="w-2 h-2 rounded-full ${i <= (item.price_sensitivity === '高' ? 3 : item.price_sensitivity === '中' ? 2 : 1) ? 'bg-[#CCFF00]' : 'bg-gray-700'}"></div>`).join('')}
+                    </div>
+                    <span class="text-xs text-gray-400">${item.price_sensitivity}</span>
+                </div>` : ''}
+            </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== 交互层 ====================
+        function setupEventListeners() {
+            // 有效性筛选
+            document.getElementById('btn-all').addEventListener('click', () => setFilter('all'));
+            document.getElementById('btn-valid').addEventListener('click', () => setFilter('valid'));
+            document.getElementById('btn-invalid').addEventListener('click', () => setFilter('invalid'));
+
+            // 画像筛选
+            document.querySelectorAll('.persona-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const persona = e.target.dataset.persona;
+                    setPersona(persona);
+                });
+            });
+        }
+
+        function setFilter(type) {
+            State.filter = type;
+            
+            // 更新按钮样式
+            const buttons = {
+                'all': document.getElementById('btn-all'),
+                'valid': document.getElementById('btn-valid'),
+                'invalid': document.getElementById('btn-invalid')
+            };
+            
+            Object.keys(buttons).forEach(key => {
+                const btn = buttons[key];
+                if (key === type) {
                     btn.classList.remove('bg-gray-800', 'text-gray-400');
                     btn.classList.add('bg-lemon', 'text-black');
                 } else {
@@ -254,11 +282,11 @@
                 }
             });
             
-            renderData();
+            render();
         }
-        
-        function filterByPersona(persona) {
-            currentPersona = persona;
+
+        function setPersona(persona) {
+            State.persona = persona;
             
             document.querySelectorAll('.persona-btn').forEach(btn => {
                 if (btn.dataset.persona === persona) {
@@ -270,14 +298,13 @@
                 }
             });
             
-            renderData();
+            render();
         }
-        
-        // ==================== 初始化 ====================
-        fetchData();
-        
-        // 每30秒自动刷新
-        setInterval(fetchData, 30000);
+
+        // ==================== 启动 ====================
+        setupEventListeners();
+        loadData();
+        setInterval(loadData, 30000);
     </script>
 </body>
 </html>
