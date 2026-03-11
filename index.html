@@ -43,49 +43,7 @@
     <div id="voices">加载中...</div>
 </div>
 
-<script>
-    // 替换这里！替换这里！替换这里！
-    const SUPABASE_URL = 'https://brzxjzucucgzlkhlndcw.supabase.co';  // 把你的URL贴进来
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc';  // 把你的anon key贴进来
-    
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    async function load() {
-        // 加载项目数据
-        const { data: stat } = await supabase
-            .from('project_stats')
-            .select('*')
-            .order('date', { ascending: false })
-            .limit(1)
-            .single();
-            
-        if (stat) {
-            document.getElementById('backers').textContent = stat.backers_count;
-            document.getElementById('pledged').textContent = '$' + (stat.pledged_amount/1000000).toFixed(2) + 'M';
-            document.getElementById('days').textContent = stat.days_remaining;
-            document.getElementById('update-time').textContent = new Date(stat.updated_at).toLocaleString('zh-CN');
-        }
-        
-        // 加载用户声音
-        const { data: voices } = await supabase
-            .from('user_voices')
-            .select('*')
-            .eq('sentiment', 'positive')
-            .limit(3);
-            
-        if (voices) {
-            document.getElementById('voices').innerHTML = voices.map(v => `
-                <div class="quote">
-                    <p class="italic text-gray-300 mb-2">"${v.original_text}"</p>
-                    <p class="text-xs text-gray-500">场景：${v.scene_tag} | 情绪：${v.emotion_tag}</p>
-                    <p class="text-sm mt-2"><span class="text-gray-500">指向：</span>${v.user_focus}</p>
-                    <p class="text-sm"><span class="text-gray-500">归因：</span><span class="lemon">${v.product_capability}</span></p>
-                </div>
-            `).join('');
-        }
-    }
-    
-    load();
+
 </script>
 <script>
   // ==================== REPLACE HERE ====================
