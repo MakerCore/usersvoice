@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iNew3D Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #0A0A0A; color: #E5E5E5; }
+        .lemon { color: #CCFF00; }
+        .card { background: #141414; border: 1px solid #262626; border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+        .quote { border-left: 3px solid #CCFF00; padding-left: 16px; margin: 16px 0; }
+        .risk { border-left: 3px solid #FF4444; padding-left: 16px; margin: 16px 0; }
+    </style>
+</head>
+<body class="p-4 max-w-3xl mx-auto">
+
+<!-- 顶部数据 -->
+<div class="card">
+    <h1 class="text-3xl font-bold mb-2">iNew3D Full Color <span class="lemon">3D Printer</span></h1>
+    <p class="text-gray-400 text-sm mb-4">最后更新：<span id="update-time">加载中...</span></p>
+    
+    <div class="grid grid-cols-3 gap-4 text-center">
+        <div>
+            <div class="text-3xl font-bold lemon" id="backers">-</div>
+            <div class="text-xs text-gray-400">Backers</div>
+        </div>
+        <div>
+            <div class="text-3xl font-bold" id="pledged">-</div>
+            <div class="text-xs text-gray-400">已筹金额</div>
+        </div>
+        <div>
+            <div class="text-3xl font-bold" id="days">-</div>
+            <div class="text-xs text-gray-400">剩余天数</div>
+        </div>
+    </div>
+</div>
+
+<!-- 用户声音 -->
+<div class="card">
+    <h2 class="text-xl font-bold mb-4">用户原话精选</h2>
+    <div id="voices">加载中...</div>
+</div>
+
+<script>
+    // 替换这里！替换这里！替换这里！
+    const SUPABASE_URL = 'https://brzxjzucucgzlkhlndcw.supabase.co';  // 把你的URL贴进来
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc';  // 把你的anon key贴进来
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    async function load() {
+        // 加载项目数据
+        const { data: stat } = await supabase
+            .from('project_stats')
+            .select('*')
+            .order('date', { ascending: false })
+            .limit(1)
+            .single();
+            
+        if (stat) {
+            document.getElementById('backers').textContent = stat.backers_count;
+            document.getElementById('pledged').textContent = '$' + (stat.pledged_amount/1000000).toFixed(2) + 'M';
+            document.getElementById('days').textContent = stat.days_remaining;
+            document.getElementById('update-time').textContent = new Date(stat.updated_at).toLocaleString('zh-CN');
+        }
+        
+        // 加载用户声音
+        const { data: voices } = await supabase
+            .from('user_voices')
+            .select('*')
+            .eq('sentiment', 'positive')
+            .limit(3);
+            
+        if (voices) {
+            document.getElementById('voices').innerHTML = voices.map(v => `
+                <div class="quote">
+                    <p class="italic text-gray-300 mb-2">"${v.original_text}"</p>
+                    <p class="text-xs text-gray-500">场景：${v.scene_tag} | 情绪：${v.emotion_tag}</p>
+                    <p class="text-sm mt-2"><span class="text-gray-500">指向：</span>${v.user_focus}</p>
+                    <p class="text-sm"><span class="text-gray-500">归因：</span><span class="lemon">${v.product_capability}</span></p>
+                </div>
+            `).join('');
+        }
+    }
+    
+    load();
+</script>
+
+</body>
+</html>
