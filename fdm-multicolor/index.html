@@ -212,7 +212,7 @@
 <div class="card wide">
   <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m06">Two Product Philosophies</span><span class="card-sub" data-i18n="m06sub">Three user archetypes that explain every purchase decision.</span></div><span class="badge">06</span></div>
   <div class="card-body" style="padding-bottom:0;"><div class="persona-grid" id="personaGrid"></div></div>
-  <div style="padding:0 18px;"><div class="paywall" style="min-height:140px;margin:0 -18px;"><div class="pw-ol"></div><div class="pw-in"><div class="pw-icon">🔒</div><p class="pw-text" data-i18n="unlockText">Unlock Full Analysis · $29</p><a href="mailto:hi@lemon.wang?subject=UVI%20FDM%20Unlock" class="pw-btn" data-i18n="contactBtn">Contact to Unlock</a></div></div></div>
+  <div style="padding:0 18px;position:relative;"><div class="paywall" style="min-height:140px;margin:0 -18px;"><div class="pw-ol"></div><div class="pw-in"><div class="pw-icon">🔒</div><p class="pw-text" data-i18n="unlockText">Unlock Full Analysis · $29</p><a href="mailto:hi@lemon.wang?subject=UVI%20FDM%20Unlock" class="pw-btn" data-i18n="contactBtn">Contact to Unlock</a></div></div></div>
 </div>
 
 <div class="card">
@@ -352,22 +352,25 @@ function render(d){
     $('findingText').textContent=(FINDINGS[rb]||{})[lang]||'';
   }
   var cats=d.filter(function(x){return x.frustration_level==='catastrophic';});
+  var usingFallback=false;
+  if(!cats.length){cats=d.filter(function(x){return x.frustration_level==='significant';});usingFallback=true;}
   var wows=d.filter(function(x){return x.delight_level==='wow';});
   var n=d.length||1;
   $('keyStats').innerHTML='<div class="stat-box"><div class="stat-num">'+d.length+'</div><div class="stat-lbl">'+L.totalEntries+'</div></div><div class="stat-box red"><div class="stat-num">'+Math.round(cats.length/n*100)+'%</div><div class="stat-lbl">'+L.catPct+'</div></div><div class="stat-box grn"><div class="stat-num">'+Math.round(wows.length/n*100)+'%</div><div class="stat-lbl">'+L.wowPct+'</div></div>';
-  renderCat(cats);renderWow(wows);renderAttr(d);renderMigration();render07();render08();render09();initM11(d);renderPersonas();applyLang();
+  renderCat(cats,usingFallback);renderWow(wows);renderAttr(d);renderMigration();render07();render08();render09();initM11(d);renderPersonas();applyLang();
 }
 
 function vcHtml(it,type){return '<div class="vc '+type+'"><p class="vc-text">'+esc(it.text)+'</p><div class="vc-meta"><span class="vtag '+bc(it.brand)+'">'+esc(it.brand||'')+'</span>'+(it.product_model?'<span class="vtag g">'+esc(it.product_model)+'</span>':'')+(it.source_platform?'<span class="vtag g">'+esc(it.source_platform)+'</span>':'')+'</div></div>';}
 
-function renderCat(items){
+function renderCat(items,usingFallback){
   var el=$('catList');
   if(!items.length){el.innerHTML='<div class="empty">'+T[lang].noData+'</div>';return;}
+  var fallbackNote=usingFallback?'<div style="font-size:11px;color:var(--sub);margin-bottom:10px;padding:6px 8px;background:rgba(128,128,128,.08);border-radius:4px;">'+(lang==='zh'?'暂无灾难性时刻 — 以下展示重要痛点':'No catastrophic moments — showing significant frustrations instead')+'</div>':'';
   if(brand==='all'){
-    var html='';
+    var html=fallbackNote;
     BRAND_ORDER.forEach(function(b){var grp=items.filter(function(x){return x.brand===b;});if(!grp.length)return;html+='<div class="brand-group-head"><span class="bdot" style="background:var('+bv(b)+')"></span>'+esc(b)+(b==='Prusa'?' <span style="font-size:10px;color:var(--red);font-weight:700;">'+grp.length+' catastrophic</span>':'')+'</div>';grp.forEach(function(it){html+=vcHtml(it,'cat');});});
     el.innerHTML=html;
-  }else{el.innerHTML=items.map(function(it){return vcHtml(it,'cat');}).join('');}
+  }else{el.innerHTML=fallbackNote+items.map(function(it){return vcHtml(it,'cat');}).join('');}
 }
 function renderWow(items){var el=$('wowList');if(!items.length){el.innerHTML='<div class="empty">'+T[lang].noData+'</div>';return;}el.innerHTML=items.map(function(it){return vcHtml(it,'wow');}).join('');}
 
