@@ -118,7 +118,7 @@
         async function loadData() {
             document.getElementById('data-status').textContent = '同步中...';
             try {
-                const { data, error } = await supabaseClient.from('user_voices').select('*').order('source_created_at', { ascending: false });
+                const { data, error } = await supabaseClient.from('inew_user_voices').select('*').order('source_created_at', { ascending: false });
                 if (error) throw error;
                 dbData = data || [];
                 document.getElementById('data-status').textContent = `已同步 ${dbData.length} 条数据 · ${new Date().toLocaleTimeString()}`;
