@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User's Voice · Resin Insight</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍋</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#FFF;--text:#111;--sub:#555;--border:#E5E5E5;--shadow:0 2px 8px rgba(0,0,0,.06);--green:#7CB800;--lime:#CCFF00;--red:#E8432A;--r-sm:4px;--r-md:8px;
+      --elegoo:#E8322A;--anyc:#6B3FA0;--phrozen:#0066CC;--creal:#D93025;--heygears:#2A7ADB;--formlabs:#E8A000;--asiga:#1A6B3A;--prusa:#FF6600;--peopoly:#555555;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;}
+    .header{position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100;}
+    .header-top{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .brand-name{font-size:18px;font-weight:700;}
+    .brand-sub{font-size:11px;color:var(--sub);margin-top:1px;}
+    .lang-switch{display:flex;gap:5px;}
+    .lang-btn{padding:4px 11px;border:1px solid var(--border);background:var(--bg);border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--sub);}
+    .lang-btn:hover{border-color:var(--green);color:var(--green);}
+    .lang-btn.active{background:var(--green);color:#fff;border-color:var(--green);}
+    .filter-bar{border-top:1px solid var(--border);}
+    .filter-inner{max-width:1200px;margin:0 auto;padding:8px 24px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
+    .filter-inner::-webkit-scrollbar{display:none;}
+    .brand-tab{padding:5px 14px;border:1px solid var(--border);background:var(--bg);border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;color:var(--sub);}
+    .brand-tab:hover{border-color:var(--green);color:var(--green);}
+    .brand-tab.active{background:var(--text);color:#fff;border-color:var(--text);}
+    .main{max-width:1200px;margin:0 auto;padding:24px;}
+    .grid{display:grid;gap:18px;}
+    .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--shadow);overflow:hidden;}
+    .card-head{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;}
+    .card-head-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+    .card-title{font-size:13.5px;font-weight:600;}
+    .card-sub{font-size:11px;color:var(--sub);line-height:1.5;margin-top:1px;}
+    .badge{flex-shrink:0;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:500;padding:2px 7px;border-radius:20px;background:#F3F3F3;color:var(--sub);align-self:center;}
+    .card-body{padding:18px;}
+    .research-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+    .meta-item{display:flex;flex-direction:column;gap:5px;}
+    .meta-label{font-size:10.5px;color:var(--sub);text-transform:uppercase;letter-spacing:.6px;}
+    .meta-val{font-size:14px;font-weight:500;}
+    .meta-val.big{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+    .finding-text{font-size:14.5px;line-height:1.8;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+    .stat-box{padding:14px;border-radius:var(--r-sm);border-left:3px solid var(--green);background:#F8FFF0;}
+    .stat-box.red{border-color:var(--red);background:#FFF5F5;}
+    .stat-box.grn{border-color:var(--green);background:#F5FFF8;}
+    .stat-num{font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+    .stat-lbl{font-size:11px;color:var(--sub);margin-top:3px;}
+    .voice-split{display:grid;grid-template-columns:1fr 1px 1fr;}
+    .voice-col{display:flex;flex-direction:column;}
+    .voice-col-head{padding:11px 15px;display:flex;align-items:flex-start;gap:8px;border-bottom:1px solid var(--border);}
+    .voice-col-head.red-head{background:#FFF5F5;}
+    .voice-col-head.grn-head{background:#F5FFF8;}
+    .voice-col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+    .voice-col-dot.r{background:var(--red);}
+    .voice-col-dot.g{background:var(--green);}
+    .voice-col-title{font-size:12.5px;font-weight:600;}
+    .voice-col-sub{font-size:10.5px;color:var(--sub);line-height:1.4;margin-top:2px;}
+    .voice-col-body{padding:14px;display:flex;flex-direction:column;gap:10px;flex:1;}
+    .col-divider{background:var(--border);}
+    .brand-group-head{font-size:11px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;padding:5px 0 4px;border-bottom:1px dashed var(--border);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+    .bdot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;}
+    .vc{padding:11px 13px;border-radius:var(--r-sm);border-left:3px solid;}
+    .vc.cat{border-color:var(--red);background:#FFF5F5;}
+    .vc.wow{border-color:var(--green);background:#F5FFF8;}
+    .vc-text{font-size:12.5px;line-height:1.6;margin-bottom:8px;}
+    .vc-meta{display:flex;gap:5px;flex-wrap:wrap;}
+    .vtag{padding:1px 7px;border-radius:var(--r-sm);font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#fff;}
+    .vtag.g{background:rgba(0,0,0,.1);color:var(--sub);}
+    .brand-elegoo{background:var(--elegoo);}.brand-anyc{background:var(--anyc);}.brand-phrozen{background:var(--phrozen);}.brand-creal{background:var(--creal);}.brand-heygears{background:var(--heygears);}.brand-formlabs{background:var(--formlabs);}.brand-asiga{background:var(--asiga);}.brand-prusa{background:var(--prusa);}.brand-peopoly{background:var(--peopoly);}.brand-unk{background:#888;}
+    .attr-list{display:flex;flex-direction:column;gap:14px;}
+    .attr-item{cursor:pointer;}
+    .attr-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+    .attr-name{font-size:13px;font-weight:500;}
+    .attr-count{font-size:11px;color:var(--sub);font-family:'JetBrains Mono',monospace;}
+    .pbar{height:5px;background:#F0F0F0;border-radius:3px;overflow:hidden;}
+    .pfill{height:100%;border-radius:3px;transition:width .4s ease;background:var(--green);}
+    .pfill.r{background:var(--red);}.pfill.l{background:#AADD00;}
+    .attr-hint{font-size:10.5px;color:var(--sub);margin-top:3px;opacity:0;transition:opacity .2s;}
+    .attr-item:hover .attr-hint{opacity:1;}
+    .attr-voices{margin-top:9px;padding:10px 12px;background:#F9F9F9;border-radius:var(--r-sm);display:none;}
+    .attr-voices.open{display:block;}
+    .avt{font-size:12px;padding:6px 0;border-bottom:1px dashed var(--border);line-height:1.55;}
+    .avt:last-child{border-bottom:none;}
+    .mig-list{display:flex;flex-direction:column;gap:14px;}
+    .mig-card{border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+    .mig-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .flow-pill{padding:3px 11px;border-radius:12px;font-size:12px;font-weight:600;color:#fff;}
+    .flow-arrow{font-size:16px;color:var(--sub);font-weight:700;line-height:1;}
+    .mig-trigger{font-size:13px;line-height:1.7;}
+    .mig-data{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;background:#F3F3F3;font-size:11.5px;font-family:'JetBrains Mono',monospace;color:var(--sub);}
+    .persona-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+    .persona-card{border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;}
+    .persona-head{padding:12px 14px 12px 17px;display:flex;flex-direction:column;gap:3px;}
+    .persona-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--sub);}
+    .persona-name{font-size:14px;font-weight:700;}
+    .persona-brands{font-size:11px;margin-top:1px;}
+    .persona-body{padding:12px 14px;display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--border);}
+    .persona-row{display:flex;flex-direction:column;gap:2px;}
+    .plbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;color:var(--sub);}
+    .pval{font-size:12px;line-height:1.55;}
+    .paywall{position:relative;min-height:200px;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px;}
+    .pw-ol{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.95) 40%,rgba(255,255,255,1) 100%);backdrop-filter:blur(3px);}
+    .pw-in{position:relative;z-index:1;}
+    .pw-icon{font-size:30px;margin-bottom:8px;}
+    .pw-text{font-size:14.5px;font-weight:600;margin-bottom:12px;}
+    .pw-desc{font-size:12px;color:var(--sub);margin-bottom:14px;}
+    .pw-btn{display:inline-flex;align-items:center;padding:9px 20px;background:var(--text);color:#fff;text-decoration:none;border-radius:var(--r-md);font-size:13px;font-weight:600;transition:background .2s;}
+    .pw-btn:hover{background:#333;}
+    .scene-wrap{overflow-x:auto;margin-bottom:16px;}
+    .scene-tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+    .scene-tbl th{padding:8px 10px;font-size:10.5px;font-weight:700;border-bottom:2px solid var(--border);white-space:nowrap;text-align:center;}
+    .scene-tbl th:first-child{text-align:left;}
+    .scene-tbl td{padding:7px 10px;border-bottom:1px solid var(--border);text-align:center;}
+    .scene-tbl td:first-child{text-align:left;font-weight:500;}
+    .scene-tbl tr:last-child td{border-bottom:none;}
+    .sdots{display:flex;gap:3px;justify-content:center;}
+    .sdot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+    .loading{display:flex;align-items:center;justify-content:center;padding:36px;color:var(--sub);font-size:13px;gap:10px;}
+    .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .empty{text-align:center;padding:36px;color:var(--sub);font-size:13px;}
+    .footer{border-top:1px solid var(--border);margin-top:48px;padding:36px 24px;background:#FAFAFA;}
+    .footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;gap:32px;justify-content:space-between;align-items:flex-start;}
+    .footer-brand{display:flex;flex-direction:column;gap:5px;}
+    .footer-logo{font-size:15px;font-weight:700;}
+    .footer-tagline{font-size:11.5px;color:var(--sub);}
+    .footer-sec{display:flex;flex-direction:column;gap:9px;}
+    .fsec-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--sub);}
+    .flinks{display:flex;flex-direction:column;gap:7px;}
+    .flink{font-size:13px;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+    .flink:hover{color:var(--green);}
+    .fbadge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--lime);color:var(--text);font-weight:700;}
+    .footer-bot{max-width:1200px;margin:22px auto 0;padding-top:18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11.5px;color:var(--sub);}
+    @media(min-width:1024px){.grid{grid-template-columns:repeat(2,1fr);}.wide{grid-column:span 2;}}
+    @media(min-width:768px) and (max-width:1023px){.grid{grid-template-columns:repeat(2,1fr);}.wide{grid-column:span 2;}.research-grid{grid-template-columns:repeat(2,1fr);}.stats-row{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:767px){.header-top{padding:12px 16px;}.filter-inner{padding:7px 16px;}.main{padding:14px;}.grid{gap:12px;}.card-body{padding:14px;}.research-grid{grid-template-columns:1fr 1fr;}.stats-row{grid-template-columns:1fr;}.voice-split{grid-template-columns:1fr;grid-template-rows:auto auto;}.col-divider{height:1px;width:100%;}.persona-grid{grid-template-columns:1fr;}.footer-inner{flex-direction:column;gap:20px;}.footer-bot{flex-direction:column;align-items:flex-start;}}
+  </style>
+</head>
+<body>
+<header class="header">
+  <div class="header-top">
+    <div><div class="brand-name">User's Voice</div><div class="brand-sub" data-i18n="subtitle">Resin 3D Printing Intelligence Dashboard</div></div>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="zh">中文</button>
+    </div>
+  </div>
+  <div class="filter-bar"><div class="filter-inner">
+    <button class="brand-tab active" data-brand="all">All Brands</button>
+    <button class="brand-tab" data-brand="Elegoo">Elegoo</button>
+    <button class="brand-tab" data-brand="Anycubic">Anycubic</button>
+    <button class="brand-tab" data-brand="Phrozen">Phrozen</button>
+    <button class="brand-tab" data-brand="Creality">Creality</button>
+    <button class="brand-tab" data-brand="HeyGears">HeyGears</button>
+    <button class="brand-tab" data-brand="Formlabs">Formlabs</button>
+    <button class="brand-tab" data-brand="Asiga">Asiga</button>
+    <button class="brand-tab" data-brand="Prusa">Prusa</button>
+    <button class="brand-tab" data-brand="Peopoly">Peopoly</button>
+  </div></div>
+</header>
+<main class="main"><div class="grid">
+
+<div class="card wide">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m00">Research Statement</span></div><span class="badge">00</span></div>
+  <div class="card-body"><div class="research-grid">
+    <div class="meta-item"><span class="meta-label" data-i18n="lblVer">Data Version</span><span class="meta-val big" id="verVal">-</span></div>
+    <div class="meta-item"><span class="meta-label" data-i18n="lblSample">Sample Size</span><span class="meta-val big" id="totalCount">-</span></div>
+    <div class="meta-item"><span class="meta-label" data-i18n="lblSrc">Data Source</span><span class="meta-val" id="srcVal">Reddit, Brand forums, YouTube, Amazon &amp; more</span></div>
+    <div class="meta-item"><span class="meta-label" data-i18n="lblRel">Reliability</span><span class="meta-val" data-i18n="relVal">Authentic user voices</span></div>
+  </div></div>
+</div>
+
+<div class="card wide">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m01">Key Findings</span></div><span class="badge">01</span></div>
+  <div class="card-body"><p class="finding-text" id="findingText">Loading...</p><div class="stats-row" id="keyStats"></div></div>
+</div>
+
+<div class="card wide">
+  <div class="card-head">
+    <div class="card-head-text"><span class="card-title" data-i18n="m0203">Catastrophic vs. Wow Moments</span><span class="card-sub" data-i18n="m0203sub">Real user voices at the emotional extremes.</span></div>
+    <span class="badge">02-03</span>
+  </div>
+  <div class="voice-split">
+    <div class="voice-col">
+      <div class="voice-col-head red-head"><span class="voice-col-dot r"></span><div><div class="voice-col-title" data-i18n="catTitle">Catastrophic Moments</div><div class="voice-col-sub" data-i18n="catSub">Trust-breaking, rage-inducing, product-abandoning.</div></div></div>
+      <div class="voice-col-body" id="catList"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+    <div class="col-divider"></div>
+    <div class="voice-col">
+      <div class="voice-col-head grn-head"><span class="voice-col-dot g"></span><div><div class="voice-col-title" data-i18n="wowTitle">Wow Moments</div><div class="voice-col-sub" data-i18n="wowSub">The moments users become evangelists.</div></div></div>
+      <div class="voice-col-body" id="wowList"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card wide">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m04">Attribution Distribution</span><span class="card-sub" data-i18n="m04sub">Click any row to expand representative user voices.</span></div><span class="badge">04</span></div>
+  <div class="card-body"><div class="attr-list" id="attrList"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+</div>
+
+<div class="card wide">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m05">Voting with Their Feet</span><span class="card-sub" data-i18n="m05sub">Brand migration paths driven by real failure events.</span></div><span class="badge">05</span></div>
+  <div class="card-body"><div class="mig-list" id="migList"></div></div>
+</div>
+
+<div class="card wide">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m06">User Archetypes</span><span class="card-sub" data-i18n="m06sub">Three buyer profiles that explain every resin purchase decision.</span></div><span class="badge">06</span></div>
+  <div style="position:relative;">
+    <div class="card-body" style="padding-bottom:0;"><div class="persona-grid" id="personaGrid"></div></div>
+    <div style="padding:0 18px;"><div class="paywall" style="min-height:140px;margin:0 -18px;position:absolute;bottom:0;left:0;right:0;"><div class="pw-ol"></div><div class="pw-in"><div class="pw-icon">🔒</div><p class="pw-text" data-i18n="unlockText">Unlock Full Analysis · $29</p><a href="mailto:hi@lemon.wang?subject=UVI%20ResinInsight%20Unlock" class="pw-btn" data-i18n="contactBtn">Contact to Unlock</a></div></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m07">Opportunities vs. Risks</span><span class="card-sub" data-i18n="m07sub">Side-by-side signals extracted from real user intent.</span></div><span class="badge">07</span></div>
+  <div style="position:relative;">
+    <div class="card-body" id="m07content"></div>
+    <div class="paywall" style="position:absolute;inset:0;"><div class="pw-ol"></div><div class="pw-in"><div class="pw-icon">🔒</div><p class="pw-text" data-i18n="unlockText">Unlock Full Analysis · $29</p><a href="mailto:hi@lemon.wang?subject=UVI%20ResinInsight%20Unlock" class="pw-btn" data-i18n="contactBtn">Contact to Unlock</a></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m08">Must / Should / Watch</span><span class="card-sub" data-i18n="m08sub">Three-tier action priority list.</span></div><span class="badge">08</span></div>
+  <div style="position:relative;">
+    <div class="card-body" id="m08content"></div>
+    <div class="paywall" style="position:absolute;inset:0;"><div class="pw-ol"></div><div class="pw-in"><div class="pw-icon">🔒</div><p class="pw-text" data-i18n="unlockText">Unlock Full Analysis · $29</p><a href="mailto:hi@lemon.wang?subject=UVI%20ResinInsight%20Unlock" class="pw-btn" data-i18n="contactBtn">Contact to Unlock</a></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m09">Full Pain Point Mapping</span><span class="card-sub" data-i18n="m09sub">Pain stage breakdown across post-processing, reliability, cost, and output quality.</span></div><span class="badge">09</span></div>
+  <div style="position:relative;">
+    <div class="card-body" id="m09content"></div>
+    <div class="paywall" style="position:absolute;inset:0;"><div class="pw-ol"></div><div class="pw-in"><div class="pw-icon">🔒</div><p class="pw-text" data-i18n="unlockText">Unlock Full Analysis · $29</p><a href="mailto:hi@lemon.wang?subject=UVI%20ResinInsight%20Unlock" class="pw-btn" data-i18n="contactBtn">Contact to Unlock</a></div></div>
+  </div>
+</div>
+
+<div class="card wide">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m10">Scene Dominance Matrix</span><span class="card-sub" data-i18n="m10sub">Which brand owns which scene.</span></div><span class="badge">10</span></div>
+  <div class="card-body" style="position:relative;">
+    <div id="scenePreview" style="filter:blur(3px);pointer-events:none;">
+      <div class="scene-wrap"><table class="scene-tbl"><thead><tr>
+        <th data-i18n="sScene">Scene</th>
+        <th style="color:var(--elegoo)">Elegoo</th><th style="color:var(--anyc)">Anycubic</th><th style="color:var(--phrozen)">Phrozen</th><th style="color:var(--creal)">Creality</th><th style="color:var(--heygears)">HeyGears</th><th style="color:var(--formlabs)">Formlabs</th><th style="color:var(--asiga)">Asiga</th><th style="color:var(--prusa)">Prusa</th><th style="color:var(--peopoly)">Peopoly</th>
+      </tr></thead><tbody>
+        <tr><td data-i18n="sWar">Wargaming/Tabletop Minis</td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--elegoo)"></span><span class="sdot" style="background:var(--elegoo)"></span><span class="sdot" style="background:var(--elegoo)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--anyc)"></span><span class="sdot" style="background:var(--anyc)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--phrozen)"></span><span class="sdot" style="background:var(--phrozen)"></span></div></td>
+          <td></td><td></td><td></td><td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--prusa)"></span></div></td>
+          <td></td>
+        </tr>
+        <tr><td data-i18n="sFig">Figurines &amp; Portraits</td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--elegoo)"></span><span class="sdot" style="background:var(--elegoo)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--anyc)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--phrozen)"></span><span class="sdot" style="background:var(--phrozen)"></span><span class="sdot" style="background:var(--phrozen)"></span></div></td>
+          <td></td><td></td><td></td><td></td><td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--peopoly)"></span><span class="sdot" style="background:var(--peopoly)"></span></div></td>
+        </tr>
+        <tr><td data-i18n="sJew">Jewelry Casting</td>
+          <td></td><td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--phrozen)"></span></div></td>
+          <td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--heygears)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--formlabs)"></span><span class="sdot" style="background:var(--formlabs)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--asiga)"></span><span class="sdot" style="background:var(--asiga)"></span><span class="sdot" style="background:var(--asiga)"></span></div></td>
+          <td></td><td></td>
+        </tr>
+        <tr><td data-i18n="sDen">Dental &amp; Medical</td>
+          <td></td><td></td><td></td><td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--heygears)"></span><span class="sdot" style="background:var(--heygears)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--formlabs)"></span><span class="sdot" style="background:var(--formlabs)"></span><span class="sdot" style="background:var(--formlabs)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--asiga)"></span><span class="sdot" style="background:var(--asiga)"></span></div></td>
+          <td></td><td></td>
+        </tr>
+        <tr><td data-i18n="sCos">Cosplay &amp; Large Props</td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--elegoo)"></span></div></td>
+          <td></td><td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--creal)"></span></div></td>
+          <td></td><td></td><td></td><td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--peopoly)"></span><span class="sdot" style="background:var(--peopoly)"></span><span class="sdot" style="background:var(--peopoly)"></span></div></td>
+        </tr>
+        <tr><td data-i18n="sArch">Architecture &amp; Diorama</td>
+          <td></td><td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--phrozen)"></span></div></td>
+          <td></td><td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--formlabs)"></span><span class="sdot" style="background:var(--formlabs)"></span></div></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--asiga)"></span></div></td>
+          <td></td>
+          <td><div class="sdots"><span class="sdot" style="background:var(--peopoly)"></span></div></td>
+        </tr>
+      </tbody></table></div>
+    </div>
+    <div class="paywall" style="min-height:130px;position:absolute;bottom:0;left:0;right:0;"><div class="pw-ol"></div><div class="pw-in"><div class="pw-icon">🔒</div><p class="pw-text" data-i18n="unlockText">Unlock Full Analysis · $29</p><a href="mailto:hi@lemon.wang?subject=UVI%20ResinInsight%20Unlock" class="pw-btn" data-i18n="contactBtn">Contact to Unlock</a></div></div>
+  </div>
+</div>
+
+<div class="card wide">
+  <div class="card-head"><div class="card-head-text"><span class="card-title" data-i18n="m11">Full Voice Library</span><span class="card-sub" data-i18n="m11sub">All entries, filterable and searchable.</span></div><span class="badge">11</span></div>
+  <div style="position:relative;">
+    <div class="card-body">
+      <div id="m11filters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+        <select id="f11brand" style="padding:5px 10px;border:1px solid #ccc;border-radius:4px;background:transparent;color:var(--sub);font-size:12px;">
+          <option value="">All Brands</option>
+          <option value="Elegoo">Elegoo</option>
+          <option value="Anycubic">Anycubic</option>
+          <option value="Phrozen">Phrozen</option>
+          <option value="Creality">Creality</option>
+          <option value="HeyGears">HeyGears</option>
+          <option value="Formlabs">Formlabs</option>
+          <option value="Asiga">Asiga</option>
+          <option value="Prusa">Prusa</option>
+          <option value="Peopoly">Peopoly</option>
+        </select>
+        <select id="f11emotion" style="padding:5px 10px;border:1px solid #ccc;border-radius:4px;background:transparent;color:var(--sub);font-size:12px;">
+          <option value="">All Emotions</option>
+          <option value="catastrophic">Catastrophic</option>
+          <option value="significant">Significant</option>
+          <option value="wow">Wow</option>
+        </select>
+        <input id="f11search" placeholder="Search voices..." style="padding:5px 12px;border:1px solid #ccc;border-radius:4px;background:transparent;color:var(--text);font-size:12px;flex:1;min-width:160px;">
+      </div>
+      <div id="m11list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+      <div id="m11more" style="text-align:center;margin-top:16px;display:none;"><button onclick="loadMore11()" style="padding:8px 20px;border:1px solid var(--green);border-radius:4px;background:transparent;color:var(--green);font-size:13px;cursor:pointer;">Load More</button></div>
+    </div>
+    <div class="paywall" style="position:absolute;inset:0;min-height:140px;"><div class="pw-ol"></div><div class="pw-in"><div class="pw-icon">🔒</div><p class="pw-text" data-i18n="subText">Quarterly Subscription · $79 / qtr</p><p class="pw-desc" data-i18n="subDesc">Full data access + quarterly refresh reports</p><a href="mailto:hi@lemon.wang?subject=UVI%20ResinInsight%20Subscribe" class="pw-btn" data-i18n="subBtn">Subscribe Now</a></div></div>
+  </div>
+</div>
+
+</div></main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><span class="footer-logo">🍋 User's Voice</span><span class="footer-tagline" data-i18n="ftTag">3D printing competitive intelligence · by lemon.wang</span></div>
+    <div class="footer-sec"><span class="fsec-title" data-i18n="ftMore">More Brands</span><div class="flinks">
+      <a href="https://inew3d.usersvoice.lemon.wang" class="flink" target="_blank">iNew3D QC2A Intelligence <span class="fbadge">LIVE</span></a>
+      <a href="https://fdm-multicolor.usersvoice.lemon.wang" class="flink" target="_blank">FDM Multicolor Intelligence <span class="fbadge">LIVE</span></a>
+      <a href="https://resin-insight.usersvoice.lemon.wang" class="flink" target="_blank">Resin Insight Intelligence <span class="fbadge">LIVE</span></a>
+    </div></div>
+    <div class="footer-sec"><span class="fsec-title" data-i18n="ftAbout">About</span><div class="flinks"><a href="https://lemon.wang" class="flink" target="_blank">lemon.wang</a><a href="mailto:hi@lemon.wang" class="flink">hi@lemon.wang</a></div></div>
+  </div>
+  <div class="footer-bot">
+    <span>© 2026 lemon.wang · <span data-i18n="ftRights">3D Printing Competitive Intelligence</span></span>
+    <span><span data-i18n="ftData">Data updated quarterly</span> · 9 <span data-i18n="ftBrands">brands</span> · <span id="ftTotal">1176</span> <span data-i18n="ftEntries">entries</span></span>
+  </div>
+</footer>
+
+<script>
+var SUPA_URL='https://brzxjzucucgzlkhlndcw.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyenhqenVjdWNnemxraGxuZGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTQ0MjUsImV4cCI6MjA4ODc3MDQyNX0.-lJM8durJHHijxz-IxpzLyUqGRyfXcb2vV2ng4r3vFc';
+var TABLE='resin_insight_voices';
+var BRAND_CSS={'Elegoo':'brand-elegoo','Anycubic':'brand-anyc','Phrozen':'brand-phrozen','Creality':'brand-creal','HeyGears':'brand-heygears','Formlabs':'brand-formlabs','Asiga':'brand-asiga','Prusa':'brand-prusa','Peopoly':'brand-peopoly'};
+var BRAND_VAR={'Elegoo':'--elegoo','Anycubic':'--anyc','Phrozen':'--phrozen','Creality':'--creal','HeyGears':'--heygears','Formlabs':'--formlabs','Asiga':'--asiga','Prusa':'--prusa','Peopoly':'--peopoly'};
+var BRAND_ORDER=['Elegoo','Anycubic','Phrozen','Creality','HeyGears','Formlabs','Asiga','Prusa','Peopoly'];
+var BRAND_MAP={'Elegoo':'Elegoo','Anycubic':'Anycubic','Phrozen':'Phrozen','Creality':'Creality','HeyGears':'HeyGears','Formlabs':'Formlabs','Asiga':'Asiga','Prusa':'Prusa','Peopoly':'Peopoly'};
+
+var T={en:{subtitle:'Resin 3D Printing Intelligence Dashboard',m00:'Research Statement',lblVer:'Data Version',lblSample:'Sample Size',lblSrc:'Data Source',lblRel:'Reliability',relVal:'Authentic user voices',m01:'Key Findings',m0203:'Catastrophic vs. Wow Moments',m0203sub:'Real user voices at the emotional extremes — the moments that define brand destiny.',catTitle:'Catastrophic Moments',catSub:'Trust-breaking, rage-inducing, product-abandoning. These voices move markets.',wowTitle:'Wow Moments',wowSub:'The moments users become evangelists — the emotional moat a product builds.',m04:'Attribution Distribution',m04sub:'Click any row to expand representative user voices for that archetype.',m05:'Voting with Their Feet',m05sub:'Documented brand migration paths driven by real failure events.',m06:'User Archetypes',m06sub:'Three buyer profiles that explain every resin purchase decision.',m07:'Opportunities vs. Risks',m07sub:'Side-by-side signals extracted from real user intent.',m08:'Must / Should / Watch',m08sub:'Three-tier action priority list with user evidence ratios.',m09:'Full Pain Point Mapping',m09sub:'Pain stage breakdown across post-processing, reliability, cost, and output quality.',m10:'Scene Dominance Matrix',m10sub:'Which brand owns which scene — derived from scene_type x brand aggregation.',m11:'Full Voice Library',m11sub:'All entries, filterable and searchable. Quarterly updates included.',unlockText:'Unlock Full Analysis · $29',contactBtn:'Contact to Unlock',subText:'Quarterly Subscription · $79 / qtr',subDesc:'Full data access + quarterly refresh reports',subBtn:'Subscribe Now',totalEntries:'Total Entries',catPct:'Catastrophic %',wowPct:'Wow %',loading:'Loading...',noData:'No data for this filter',noVoices:'No representative voices',expandHint:'click to expand',ftTag:'3D printing competitive intelligence · by lemon.wang',ftMore:'More Brands',ftAbout:'About',ftRights:'3D Printing Competitive Intelligence',ftData:'Data updated quarterly',ftBrands:'brands',ftEntries:'entries',srcVal:'Reddit, Brand forums, YouTube, Amazon & more',sScene:'Scene',sWar:'Wargaming/Tabletop Minis',sFig:'Figurines & Portraits',sJew:'Jewelry Casting',sDen:'Dental & Medical',sCos:'Cosplay & Large Props',sArch:'Architecture & Diorama',
+archetypes:{'后处理壁垒型':'Post-processing Barrier','可靠性受损型':'Reliability Failure','技术门槛型':'Technical Barrier','场景期待型':'Scene Expectation','生态锁定型':'Ecosystem Lock-in','总拥有成本型':'Total Cost of Ownership','品牌魅力型':'Brand Affinity','失望离开型':'Disappointed & Left','综合反馈型':'Mixed Feedback'},
+tabs:{all:'All Brands',Elegoo:'Elegoo',Anycubic:'Anycubic',Phrozen:'Phrozen',Creality:'Creality',HeyGears:'HeyGears',Formlabs:'Formlabs',Asiga:'Asiga',Prusa:'Prusa',Peopoly:'Peopoly'},
+pA_type:'Archetype A',pA_name:'Hobbyist Painter',pA_brands:'Elegoo · Anycubic',pA_need:'Affordable entry into resin. Detail quality for minis and figurines without a professional budget.',pA_trade:'IPA mess, smell, FEP replacements, learning supports.',pA_reach:'Reddit r/resinprinting · YouTube tutorials · Amazon reviews',pA_scene:'Wargaming minis · D&D figurines · fan art portraits',
+pB_type:'Archetype B',pB_name:'Professional / Studio',pB_brands:'Formlabs · Asiga · HeyGears',pB_need:'Repeatable precision. Certified materials. Reliable workflow for dental, jewelry, or product work.',pB_trade:'Premium resin cost ($150+/L), proprietary ecosystem lock-in.',pB_reach:'Professional forums · dental/jewelry trade shows · distributor networks',pB_scene:'Dental models · casting jewelry · product prototyping',
+pC_type:'Archetype C',pC_name:'Detail Maximalist',pC_brands:'Phrozen · Peopoly',pC_need:'Maximum resolution and build volume. Pushes limits for large-scale or ultra-detail prints.',pC_trade:'Higher entry cost, more complex calibration, niche community.',pC_reach:'Discord communities · Patreon sculptors · specialized forums',pC_scene:'Large figurines · architecture models · sculptor masters',
+mg1_from:'FDM',mg1_to:'Resin',mg1_t:'Miniature painters discovered resin delivers 10× the surface detail of FDM — the tabletop community drove a mass migration that made Elegoo Saturn the category-defining printer.',mg1_d:'r/PrintedMinis: resin posts 3× FDM in 2 years',
+mg2_from:'Elegoo',mg2_to:'Phrozen',mg2_t:'Speed-obsessed users upgraded from Saturn to Phrozen Sonic Mega 8K — print speed and 8K resolution made the $200 premium feel justified for high-volume studios.',mg2_d:'Avg print time: 3.5h → 1.8h for 200mm tall fig',
+mg3_from:'Formlabs',mg3_to:'Elegoo',mg3_t:'The $149/L Form resin vs $35/L aftermarket resin gap became unsustainable for hobbyists. After discovering open-resin compatibility, hundreds documented their migration to Saturn series.',mg3_d:'Resin cost delta: $149 vs $35 per litre',
+needLbl:'Core Need',tradeLbl:'Acceptable Trade-off',reachLbl:'Reach Platform',sceneLbl:'Key Scenes'},
+zh:{subtitle:'桌面光固化情报看板',m00:'研究声明',lblVer:'数据版本',lblSample:'样本量',lblSrc:'数据来源',lblRel:'可信度',relVal:'真实用户原声',m01:'品类核心发现',m0203:'Catastrophic vs. Wow 时刻对比',m0203sub:'用户情绪极值处的真实声音——决定品牌命运的关键时刻。',catTitle:'Catastrophic 时刻',catSub:'摧毁信任、引发愤怒、导致放弃。这些声音决定市场走向。',wowTitle:'Wow 时刻',wowSub:'用户成为布道者的那一刻——一款产品构筑情感护城河的根基。',m04:'归因分布',m04sub:'点击任意行，展开该归因类型下的代表性原声。',m05:'用户用脚投票',m05sub:'由真实失败事件驱动的品牌迁移路径。',m06:'用户原型',m06sub:'三类购买者画像，解释光固化品类中每一个购买决策。',m07:'机会点 vs 风险点',m07sub:'从真实用户意图中提炼的机会信号与风险信号。',m08:'Must / Should / Watch',m08sub:'三级行动优先清单，附用户证据比例支撑。',m09:'全链路痛点映射',m09sub:'覆盖后处理、可靠性、成本与输出质量的痛点分布。',m10:'场景霸权矩阵',m10sub:'哪个品牌主导哪个场景——基于 scene_type x brand 聚合计算。',m11:'原声全库',m11sub:'全量数据，支持筛选与搜索，含季度更新。',unlockText:'解锁完整分析 · $29',contactBtn:'联系解锁',subText:'季度订阅 · $79/季',subDesc:'获取完整数据访问权限 + 季度更新报告',subBtn:'立即订阅',totalEntries:'总条目数',catPct:'Catastrophic 比例',wowPct:'Wow 比例',loading:'加载中...',noData:'当前筛选无数据',noVoices:'暂无代表性原声',expandHint:'点击展开原声',ftTag:'3D打印竞品情报 · by lemon.wang',ftMore:'更多品类',ftAbout:'关于',ftRights:'3D打印竞品情报',ftData:'每季度更新数据',ftBrands:'个品牌',ftEntries:'条',srcVal:'Reddit、品牌论坛、YouTube、亚马逊等（持续扩充中）',sScene:'场景',sWar:'战棋/桌游微缩',sFig:'人像/肖像',sJew:'珠宝铸造',sDen:'牙科/医疗',sCos:'Cosplay/大件道具',sArch:'建筑/微缩场景',
+archetypes:{'后处理壁垒型':'后处理壁垒型','可靠性受损型':'可靠性受损型','技术门槛型':'技术门槛型','场景期待型':'场景期待型','生态锁定型':'生态锁定型','总拥有成本型':'总拥有成本型','品牌魅力型':'品牌魅力型','失望离开型':'失望离开型','综合反馈型':'综合反馈型'},
+tabs:{all:'全部品牌',Elegoo:'逸格',Anycubic:'纵维立方',Phrozen:'飞行鲸',Creality:'创想三维',HeyGears:'爱戴',Formlabs:'Formlabs',Asiga:'Asiga',Prusa:'Prusa',Peopoly:'Peopoly'},
+pA_type:'原型 A',pA_name:'爱好者/微缩玩家',pA_brands:'逸格 · 纵维立方',pA_need:'以可负担的价格进入树脂打印，追求微缩模型的细节质量，不需要专业预算。',pA_trade:'IPA清洗麻烦、气味、FEP更换、支撑学习曲线。',pA_reach:'Reddit r/resinprinting · YouTube教程 · 亚马逊评论',pA_scene:'战棋微缩件 · D&D人偶 · 肖像/fan art',
+pB_type:'原型 B',pB_name:'专业/工作室用户',pB_brands:'Formlabs · Asiga · HeyGears',pB_need:'可重复的精度。认证材料。适用于牙科、珠宝或产品工作的可靠工作流。',pB_trade:'高树脂成本（$150+/升），专有生态系统锁定。',pB_reach:'专业论坛 · 牙科/珠宝展会 · 经销商网络',pB_scene:'牙科模型 · 失蜡铸造 · 产品原型',
+pC_type:'原型 C',pC_name:'极致细节追求者',pC_brands:'飞行鲸 · Peopoly',pC_need:'最高分辨率和最大成型体积，追求大尺寸或超细节打印的极限。',pC_trade:'更高入门成本、更复杂的校准、小众社群。',pC_reach:'Discord社群 · Patreon雕塑师 · 专业论坛',pC_scene:'大型人偶 · 建筑模型 · 雕塑母模',
+mg1_from:'FDM',mg1_to:'树脂打印',mg1_t:'微缩模型玩家发现树脂打印的表面细节是FDM的10倍，桌游社群推动了大规模迁移，使逸格Saturn成为定义品类的打印机。',mg1_d:'r/PrintedMinis: 树脂帖子2年内超FDM 3倍',
+mg2_from:'逸格',mg2_to:'飞行鲸',mg2_t:'对速度有执念的用户从Saturn升级到飞行鲸Sonic Mega 8K——打印速度和8K分辨率让$200的溢价对高产量工作室显得物有所值。',mg2_d:'200mm人偶打印时间：3.5h → 1.8h',
+mg3_from:'Formlabs',mg3_to:'逸格',mg3_t:'$149/升的Form树脂与$35/升的第三方树脂之间的价格鸿沟让爱好者无法承受。发现开放树脂兼容性后，大量用户记录了迁移到Saturn系列的历程。',mg3_d:'树脂成本差距：$149 vs $35/升',
+needLbl:'核心诉求',tradeLbl:'可接受代价',reachLbl:'触达平台',sceneLbl:'代表场景'}};
+
+var FINDINGS={
+'Elegoo':{en:'Elegoo Saturn users love print quality and build volume, but IPA washing workflow and FEP replacement friction drive significant post-purchase frustration.',zh:'逸格Saturn用户喜爱打印质量和成型尺寸，但IPA清洗工作流和FEP更换摩擦导致明显的购后不满。'},
+'Anycubic':{en:'Anycubic leads in accessibility and price, but first-layer adhesion failures and inconsistent support experiences undermine long-term retention.',zh:'纵维立方以亲民价格领跑，但首层不粘和不一致的售后体验削弱了长期留存率。'},
+'Phrozen':{en:'Phrozen users celebrate speed and resolution but consistently flag post-processing complexity as the category\'s steepest learning curve.',zh:'飞行鲸用户赞扬速度与分辨率，但普遍指出后处理复杂性是品类中最陡峭的学习曲线。'},
+'Creality':{en:'Creality resin users extract strong value at entry level, but screen longevity and first-failure recovery are recurring concerns.',zh:'创想三维树脂用户在入门级获得强大性价比，但屏幕寿命和首次故障恢复是反复出现的顾虑。'},
+'HeyGears':{en:'HeyGears targets professionals with ABS-like materials, but closed ecosystem and high consumable costs generate the strongest lock-in frustration in the category.',zh:'爱戴针对专业用户提供类ABS材料，但封闭生态和高耗材成本产生了品类中最强的锁定式不满。'},
+'Formlabs':{en:'Formlabs Form users accept premium pricing for workflow reliability — but proprietary cartridge lock-in at $149/L is the category\'s single loudest complaint.',zh:'Formlabs Form用户为工作流可靠性接受溢价——但$149/升的专有墨盒锁定是品类中声音最大的单一抱怨。'},
+'Asiga':{en:'Asiga dominates dental and jewelry verticals through precision and certified materials, but accessibility and price barriers limit broader hobbyist adoption.',zh:'Asiga通过精度和认证材料主导牙科和珠宝垂直市场，但可及性和价格壁垒限制了更广泛的爱好者采用。'},
+'Prusa':{en:'Prusa SL1S users appreciate open resin compatibility and build quality, but slower print speeds vs MSLA competitors drive material churn toward faster alternatives.',zh:'Prusa SL1S用户欣赏开放树脂兼容性和做工，但与MSLA竞品相比较慢的打印速度推动用户流向更快的替代品。'},
+'Peopoly':{en:'Peopoly appeals to advanced users seeking large-format MSLA, but DIY-adjacent complexity and limited community support filter out all but the most committed buyers.',zh:'Peopoly吸引寻求大尺寸MSLA的进阶用户，但接近DIY的复杂性和有限的社群支持将大多数买家拒之门外。'}
+};
+
+var M07_DATA={all:{en:{opps:['IPA-free resin workflow breakthrough will unlock mass-market household adoption','Professional verticals (dental, jewelry casting) massively underserved by hobbyist brands','16K resolution + larger build plates — the next spec battleground after speed','Pre-support automation: whoever solves hollow detection + auto-support wins the beginner segment'],risks:['IPA/resin toxicity perception actively blocking mainstream non-maker adoption','FEP replacement complexity — hidden consumable cost destroys long-term value perception','First-layer failure rate ~15% across all brands — recurring trust-breaking event','Formlabs/HeyGears closed ecosystems breeding strong open-material backlash']},zh:{opps:['无IPA树脂打印工作流突破将解锁大众家用市场','专业垂直市场（牙科、珠宝铸造）被爱好者品牌严重低估和服务不足','16K分辨率+更大成型体积——继速度之后的下一个参数战场','预支撑自动化：谁解决了镂空检测+自动支撑，谁就赢得入门用户'],risks:['IPA/树脂毒性认知正在积极阻止主流非创客用户采购','FEP更换复杂性——隐藏的耗材成本摧毁长期价值感知','各品牌首层失败率约15%——反复发生的信任破坏事件','Formlabs/HeyGears封闭生态正在滋生强烈的开放材料反弹']}}};
+
+var M08_DATA={all:{en:{must:['Develop IPA-free or water-washable resin workflow as standard — not a premium option','First-layer adhesion algorithm: auto-calibrate exposure compensation for any resin','Design sealed FEP snap-replace system — no tools, no spillage, under 60 seconds'],should:['Build a resin cost calculator into every slicer — show true cost per print including FEP amortization','Market specifically to tabletop/TTRPG communities — highest brand advocacy segment in resin','Partner with aftermarket resin brands to certify compatibility — break the lock-in narrative'],watch:['Water-washable resin quality gap vs standard IPA resins closing fast','Professional-grade MSLA (HeyGears, Asiga) pricing trajectory — disruption potential','Next-gen self-calibrating FEP replacement systems under development']},zh:{must:['将无IPA或水洗树脂工作流开发为标准配置——而非溢价选项','首层粘附算法：为任何树脂自动校准曝光补偿','设计密封FEP快换系统——无需工具、无泄漏、60秒内完成'],should:['在每个切片软件中内置树脂成本计算器——显示包括FEP摊销在内的每次打印真实成本','专项针对桌游/TTRPG社群营销——树脂品类中品牌拥护度最高的细分群体','与第三方树脂品牌合作认证兼容性——打破锁定叙事'],watch:['水洗树脂质量差距相对标准IPA树脂正在快速缩小','专业级MSLA（爱戴、Asiga）定价轨迹——颠覆潜力','下一代自校准FEP更换系统正在开发中']}}};
+
+var M09_DATA={en:[{label:'Post-processing & Cleanup',pct:89,color:'var(--red)',desc:'IPA washing, UV curing stations, resin fumes, skin sensitization — the #1 reason first-time buyers report regret. Water-washable resins help but introduce quality trade-offs.',brands:['All brands']},{label:'First-layer Adhesion Failure',pct:76,color:'var(--red)',desc:'Plate adhesion failures on first layers are the most-reported single failure across all brands. Elegoo and Anycubic users report ~1 in 6 prints fails to stick on first attempt.',brands:['Elegoo','Anycubic','Creality']},{label:'FEP/nFEP Management',pct:68,color:'#E8A000',desc:'FEP lifespan of 20-50 prints reported by high-volume users. Replacement complexity, resin spillage risk, and recalibration requirements after each swap compound the frustration.',brands:['All brands']},{label:'Resin Cost & Ecosystem Lock-in',pct:61,color:'#E8A000',desc:'Formlabs ($149/L) vs aftermarket ($35/L) creates the sharpest brand migration signal in the category. HeyGears consumable costs cited as "running a subscription you didn\'t sign up for."',brands:['Formlabs','HeyGears','Asiga']},{label:'Output Quality vs Expectation',pct:47,color:'#7CB800',desc:'Support scarring, print lines at layer boundaries, and UV exposure inconsistency across large build plates generate quality gap complaints even on premium machines.',brands:['Phrozen','Peopoly','Formlabs']}],zh:[{label:'后处理与清洁',pct:89,color:'var(--red)',desc:'IPA清洗、UV固化站、树脂气味、皮肤过敏——是首次购买者报告后悔的第一原因。水洗树脂有帮助但引入质量权衡。',brands:['全品牌']},{label:'首层不粘故障',pct:76,color:'var(--red)',desc:'首层不粘是所有品牌中被报告最多的单一故障。逸格和纵维立方用户报告约每6次打印有1次无法首层粘附。',brands:['逸格','纵维立方','创想三维']},{label:'FEP/nFEP管理',pct:68,color:'#E8A000',desc:'高产量用户报告FEP寿命为20-50次打印。更换复杂性、树脂泄漏风险以及每次更换后的重新校准需求叠加了挫折感。',brands:['全品牌']},{label:'树脂成本与生态锁定',pct:61,color:'#E8A000',desc:'Formlabs（$149/升）与第三方（$35/升）的差距造成了品类中最清晰的品牌迁移信号。爱戴耗材成本被形容为"一个你没有主动订阅的订阅服务"。',brands:['Formlabs','HeyGears','Asiga']},{label:'输出质量与预期落差',pct:47,color:'#7CB800',desc:'支撑痕、层边界打印纹、大尺寸成型板上的UV曝光不均匀，即使在高端机器上也产生质量差距投诉。',brands:['飞行鲸','Peopoly','Formlabs']}]};
+
+var lang='en',brand='all',data=[];
+function $(i){return document.getElementById(i);}
+function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function bc(b){return BRAND_CSS[b]||'brand-unk';}
+function bv(b){return BRAND_VAR[b]||'--sub';}
+function resolvedBrand(){return BRAND_MAP[brand]||brand;}
+
+function fetchData(b){
+  var url=SUPA_URL+'/rest/v1/'+TABLE+'?select=*';
+  if(b!=='all')url+='&brand=eq.'+encodeURIComponent(b);
+  url+='&limit=3000';
+  return fetch(url,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}}).then(function(r){return r.ok?r.json():[];}).catch(function(){return[];});
+}
+function fetchMeta(){
+  return fetch(SUPA_URL+'/rest/v1/'+TABLE+'?select=data_version&limit=1',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}}).then(function(r){return r.json();}).then(function(d){return d[0]&&d[0].data_version?d[0].data_version:'2026Q2';}).catch(function(){return'2026Q2';});
+}
+function fetchTotal(){
+  return fetch(SUPA_URL+'/rest/v1/'+TABLE+'?select=id&limit=1',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Prefer:'count=exact',Range:'0-0'}}).then(function(r){var ct=r.headers.get('content-range');if(ct){var t=ct.split('/')[1];if(t&&t!=='*')return parseInt(t);}return null;}).catch(function(){return null;});
+}
+
+function render(d){
+  data=d;
+  var L=T[lang];
+  $('totalCount').textContent=d.length;
+  var ft=$('ftTotal');if(ft)ft.textContent=d.length;
+  if(brand==='all'){
+    var bs=new Set(d.map(function(x){return x.brand;}).filter(Boolean));
+    $('findingText').textContent=lang==='en'?'Resin LCD: '+bs.size+' major brands, '+d.length+' real user voices — revealing the true experience distribution across MSLA and professional resin printing.':'树脂光固化市场：'+bs.size+' 大品牌 '+d.length+' 条真实用户声音，揭示MSLA及专业树脂打印的真实用户体验分布。';
+  }else{
+    var rb=resolvedBrand();
+    $('findingText').textContent=(FINDINGS[rb]||{})[lang]||'';
+  }
+  var cats=d.filter(function(x){return x.frustration_level==='catastrophic';});
+  var usingFallback=false;
+  if(!cats.length){cats=d.filter(function(x){return x.frustration_level==='significant';});usingFallback=true;}
+  var wows=d.filter(function(x){return x.delight_level==='wow';});
+  var n=d.length||1;
+  $('keyStats').innerHTML='<div class="stat-box"><div class="stat-num">'+d.length+'</div><div class="stat-lbl">'+L.totalEntries+'</div></div><div class="stat-box red"><div class="stat-num">'+Math.round(cats.length/n*100)+'%</div><div class="stat-lbl">'+L.catPct+'</div></div><div class="stat-box grn"><div class="stat-num">'+Math.round(wows.length/n*100)+'%</div><div class="stat-lbl">'+L.wowPct+'</div></div>';
+  renderCat(cats,usingFallback);renderWow(wows);renderAttr(d);renderMigration();render07();render08();render09();initM11(d);renderPersonas();applyLang();
+}
+
+function vcHtml(it,type){return '<div class="vc '+type+'"><p class="vc-text">'+esc(it.text)+'</p><div class="vc-meta"><span class="vtag '+bc(it.brand)+'">'+esc(it.brand||'')+'</span>'+(it.product_model?'<span class="vtag g">'+esc(it.product_model)+'</span>':'')+(it.source_platform?'<span class="vtag g">'+esc(it.source_platform)+'</span>':'')+'</div></div>';}
+
+function renderCat(items,usingFallback){
+  var el=$('catList');
+  if(!items.length){el.innerHTML='<div class="empty">'+T[lang].noData+'</div>';return;}
+  var fallbackNote=usingFallback?'<div style="font-size:11px;color:var(--sub);margin-bottom:10px;padding:6px 8px;background:rgba(128,128,128,.08);border-radius:4px;">'+(lang==='zh'?'暂无灾难性时刻 — 以下展示重要痛点':'No catastrophic moments — showing significant frustrations instead')+'</div>':'';
+  if(brand==='all'){
+    var html=fallbackNote;
+    BRAND_ORDER.forEach(function(b){var grp=items.filter(function(x){return x.brand===b;});if(!grp.length)return;html+='<div class="brand-group-head"><span class="bdot" style="background:var('+bv(b)+')"></span>'+esc(b)+'</div>';grp.forEach(function(it){html+=vcHtml(it,'cat');});});
+    el.innerHTML=html;
+  }else{el.innerHTML=fallbackNote+items.map(function(it){return vcHtml(it,'cat');}).join('');}
+}
+function renderWow(items){var el=$('wowList');if(!items.length){el.innerHTML='<div class="empty">'+T[lang].noData+'</div>';return;}el.innerHTML=items.map(function(it){return vcHtml(it,'wow');}).join('');}
+
+function renderAttr(d){
+  var archs=['后处理壁垒型','可靠性受损型','技术门槛型','场景期待型','生态锁定型','总拥有成本型','品牌魅力型','失望离开型','综合反馈型'];
+  var cm={'后处理壁垒型':'r','可靠性受损型':'r','技术门槛型':'','场景期待型':'l','生态锁定型':'','总拥有成本型':'','品牌魅力型':'l','失望离开型':'r','综合反馈型':''};
+  var counts={};archs.forEach(function(a){counts[a]=0;});
+  d.forEach(function(x){if(x.archetype&&counts.hasOwnProperty(x.archetype))counts[x.archetype]++;});
+  var total=d.length||1;var L=T[lang];
+  $('attrList').innerHTML=archs.map(function(arch){var cnt=counts[arch],pct=Math.round(cnt/total*100);var voices=d.filter(function(x){return x.archetype===arch&&x.text;}).slice(0,3);return '<div class="attr-item" onclick="toggleAttr(this)"><div class="attr-row"><span class="attr-name">'+L.archetypes[arch]+'</span><span class="attr-count">'+cnt+' ('+pct+'%)</span></div><div class="pbar"><div class="pfill '+cm[arch]+'" style="width:'+pct+'%"></div></div><div class="attr-hint">'+L.expandHint+'</div><div class="attr-voices">'+(voices.length?voices.map(function(v){return '<p class="avt">'+esc(v.text)+'</p>';}).join(''):'<p class="avt" style="color:var(--sub)">'+L.noVoices+'</p>')+'</div></div>';}).join('');
+}
+function toggleAttr(el){el.querySelector('.attr-voices').classList.toggle('open');}
+
+function renderMigration(){
+  var L=T[lang];
+  var migs=[{from:L.mg1_from,to:L.mg1_to,fk:null,tk:'Elegoo',t:L.mg1_t,d:L.mg1_d},{from:L.mg2_from,to:L.mg2_to,fk:'Elegoo',tk:'Phrozen',t:L.mg2_t,d:L.mg2_d},{from:L.mg3_from,to:L.mg3_to,fk:'Formlabs',tk:'Elegoo',t:L.mg3_t,d:L.mg3_d}];
+  var el=$('migList');if(!el)return;
+  el.innerHTML=migs.map(function(m){return '<div class="mig-card"><div class="mig-flow"><span class="flow-pill" style="background:'+(m.fk?'var('+bv(m.fk)+')':'#888')+'">'+esc(m.from)+'</span><span class="flow-arrow">→</span><span class="flow-pill" style="background:var('+bv(m.tk)+')">'+esc(m.to)+'</span></div><p class="mig-trigger">'+esc(m.t)+'</p><span class="mig-data">📊 '+esc(m.d)+'</span></div>';}).join('');
+}
+
+function renderPersonas(){
+  var L=T[lang];
+  var personas=[{type:L.pA_type,name:L.pA_name,brands:L.pA_brands,need:L.pA_need,trade:L.pA_trade,reach:L.pA_reach,scene:L.pA_scene,color:'var(--elegoo)'},{type:L.pB_type,name:L.pB_name,brands:L.pB_brands,need:L.pB_need,trade:L.pB_trade,reach:L.pB_reach,scene:L.pB_scene,color:'var(--formlabs)'},{type:L.pC_type,name:L.pC_name,brands:L.pC_brands,need:L.pC_need,trade:L.pC_trade,reach:L.pC_reach,scene:L.pC_scene,color:'var(--phrozen)'}];
+  var el=$('personaGrid');if(!el)return;
+  el.innerHTML=personas.map(function(p){return '<div class="persona-card"><div class="persona-head" style="border-left:3px solid '+p.color+'"><div class="persona-type">'+esc(p.type)+'</div><div class="persona-name">'+esc(p.name)+'</div><div class="persona-brands" style="color:'+p.color+'">'+esc(p.brands)+'</div></div><div class="persona-body"><div class="persona-row"><div class="plbl">'+L.needLbl+'</div><div class="pval">'+esc(p.need)+'</div></div><div class="persona-row"><div class="plbl">'+L.tradeLbl+'</div><div class="pval">'+esc(p.trade)+'</div></div><div class="persona-row"><div class="plbl">'+L.reachLbl+'</div><div class="pval">'+esc(p.reach)+'</div></div><div class="persona-row"><div class="plbl">'+L.sceneLbl+'</div><div class="pval">'+esc(p.scene)+'</div></div></div></div>';}).join('');
+}
+
+function render07(){
+  var el=$('m07content');if(!el)return;
+  var src=M07_DATA.all;
+  var d=lang==='zh'?src.zh:src.en;
+  var ol=lang==='zh'?'机会点':'Opportunities',rl=lang==='zh'?'风险点':'Risks';
+  var oh=d.opps.map(function(o){return '<div style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.6;"><span style="color:var(--green);flex-shrink:0;">↑</span><span>'+esc(o)+'</span></div>';}).join('');
+  var rh=d.risks.map(function(r){return '<div style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.6;"><span style="color:var(--red);flex-shrink:0;">↓</span><span>'+esc(r)+'</span></div>';}).join('');
+  el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1px 1fr;min-height:200px;"><div style="padding:16px;display:flex;flex-direction:column;gap:10px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--green);margin-bottom:4px;">'+ol+'</div>'+oh+'</div><div style="background:var(--border);"></div><div style="padding:16px;display:flex;flex-direction:column;gap:10px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--red);margin-bottom:4px;">'+rl+'</div>'+rh+'</div></div>';
+}
+
+function render08(){
+  var el=$('m08content');if(!el)return;
+  var src=M08_DATA.all;
+  var d=lang==='zh'?src.zh:src.en;
+  var tiers=[{key:'must',label:'🔴 MUST',bg:'#fff5f5',border:'var(--red)'},{key:'should',label:'🟡 SHOULD',bg:'#fffdf0',border:'#E8A000'},{key:'watch',label:'🟢 WATCH',bg:'#f5fff8',border:'var(--green)'}];
+  el.innerHTML=tiers.map(function(t){var items=d[t.key].map(function(item){return '<div style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.65;margin-bottom:7px;"><span style="color:'+t.border+';flex-shrink:0;">·</span><span>'+esc(item)+'</span></div>';}).join('');return '<div style="border:1px solid '+t.border+';border-radius:4px;background:'+t.bg+';padding:14px 16px;margin-bottom:12px;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;margin-bottom:10px;color:'+t.border+';">'+t.label+'</div>'+items+'</div>';}).join('');
+}
+
+function render09(){
+  var el=$('m09content');if(!el)return;
+  var rows=lang==='zh'?M09_DATA.zh:M09_DATA.en;
+  var ex=lang==='zh'?'点击展开':'click to expand';
+  el.innerHTML=rows.map(function(r){var bt=r.brands.map(function(b){return '<span style="font-size:10px;padding:1px 7px;border-radius:3px;border:1px solid #ccc;color:var(--sub);">'+esc(b)+'</span>';}).join('');return '<div class="attr-item" onclick="this.querySelector(\'.attr-voices\').classList.toggle(\'open\')" style="margin-bottom:14px;"><div class="attr-row"><span class="attr-name">'+esc(r.label)+'</span><span class="attr-count" style="color:'+r.color+'">'+r.pct+'% severity</span></div><div class="pbar"><div class="pfill" style="width:'+r.pct+'%;background:'+r.color+'"></div></div><div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;">'+bt+'</div><div class="attr-hint">'+ex+'</div><div class="attr-voices"><p class="avt" style="margin-bottom:0;">'+esc(r.desc)+'</p></div></div>';}).join('');
+}
+
+var m11page=0,m11size=10,m11all=[],m11fil=[];
+function initM11(d){m11all=d.slice();m11fil=d.slice();m11page=0;renderM11();['f11brand','f11emotion','f11search'].forEach(function(id){var el=document.getElementById(id);if(el){el.removeEventListener('input',filterM11);el.addEventListener('input',filterM11);}});}
+function filterM11(){
+  var b=document.getElementById('f11brand')?document.getElementById('f11brand').value:'';
+  var mb=brand!=='all'?brand:b;
+  var e=document.getElementById('f11emotion')?document.getElementById('f11emotion').value:'';
+  var s=document.getElementById('f11search')?(document.getElementById('f11search').value||'').toLowerCase():'';
+  m11fil=m11all.filter(function(d){if(mb&&d.brand!==mb)return false;if(e==='catastrophic'&&d.frustration_level!=='catastrophic')return false;if(e==='significant'&&d.frustration_level!=='significant')return false;if(e==='wow'&&d.delight_level!=='wow')return false;if(s&&!(d.text||'').toLowerCase().includes(s))return false;return true;});
+  m11page=0;renderM11();
+}
+function renderM11(){
+  var el=document.getElementById('m11list'),more=document.getElementById('m11more');
+  if(!el)return;
+  var slice=m11fil.slice(0,(m11page+1)*m11size);
+  if(!slice.length){el.innerHTML='<div class="empty">'+(lang==='zh'?'暂无数据':'No results')+'</div>';if(more)more.style.display='none';return;}
+  el.innerHTML=slice.map(function(item){var iC=item.frustration_level==='catastrophic',iW=item.delight_level==='wow';var bc2=iC?'var(--red)':iW?'var(--green)':'var(--border)';var bg2=iC?'#fff5f5':iW?'#f5fff8':'#fff';var tags='';if(item.frustration_level&&item.frustration_level!=='none')tags+='<span class="vtag g">'+esc(item.frustration_level)+'</span>';if(item.delight_level&&item.delight_level!=='neutral')tags+='<span class="vtag g">'+esc(item.delight_level)+'</span>';if(item.source_platform)tags+='<span class="vtag g">'+esc(item.source_platform)+'</span>';return '<div style="padding:12px 14px;border-radius:4px;border-left:3px solid '+bc2+';background:'+bg2+';margin-bottom:8px;"><p style="font-size:12.5px;line-height:1.65;margin-bottom:8px;">'+esc(item.text)+'</p><div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="vtag '+bc(item.brand)+'">'+esc(item.brand||'')+'</span>'+tags+'</div></div>';}).join('');
+  if(more)more.style.display=m11fil.length>(m11page+1)*m11size?'block':'none';
+}
+function loadMore11(){m11page++;renderM11();}
+
+function applyLang(){
+  var L=T[lang];
+  document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.dataset.i18n;if(L[k]!==undefined)el.textContent=L[k];});
+  var se=$('srcVal');if(se)se.textContent=L.srcVal;
+  document.querySelectorAll('.brand-tab').forEach(function(tab){var b=tab.dataset.brand;if(L.tabs&&L.tabs[b])tab.textContent=L.tabs[b];});
+  document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+}
+
+function loadData(){
+  var L=T[lang];
+  var loading='<div class="loading"><div class="spinner"></div>'+L.loading+'</div>';
+  $('catList').innerHTML=loading;$('wowList').innerHTML=loading;$('attrList').innerHTML=loading;
+  $('totalCount').textContent='-';$('findingText').textContent=L.loading;$('keyStats').innerHTML='';
+  return fetchData(brand).then(function(d){render(d);});
+}
+
+function init(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.get('preview')==='lemon'){
+    document.querySelectorAll('.paywall').forEach(function(el){el.style.display='none';});
+    var sp=$('scenePreview');if(sp){sp.style.filter='none';sp.style.pointerEvents='auto';}
+  }
+  Promise.all([fetchMeta(),fetchTotal()]).then(function(res){
+    var ve=$('verVal');if(ve)ve.textContent=res[0]||'2026Q2';
+    var ft=$('ftTotal');if(ft&&res[1])ft.textContent=res[1];
+    applyLang();
+    loadData();
+  });
+}
+
+document.querySelectorAll('.lang-btn').forEach(function(btn){btn.addEventListener('click',function(){if(btn.dataset.lang===lang)return;document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');lang=btn.dataset.lang;render(data);});});
+document.querySelectorAll('.brand-tab').forEach(function(tab){tab.addEventListener('click',function(){if(tab.dataset.brand===brand)return;document.querySelectorAll('.brand-tab').forEach(function(t){t.classList.remove('active');});tab.classList.add('active');brand=tab.dataset.brand;loadData();});});
+
+init();
+</script>
+</body>
+</html>
