@@ -1,1 +1,14 @@
-{}
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "has": [{"type": "host", "value": "fdm-multicolor.usersvoice.lemon.wang"}],
+      "destination": "/fdm-multicolor/$1"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{"type": "host", "value": "resin-insight.usersvoice.lemon.wang"}],
+      "destination": "/resin-insight/$1"
+    }
+  ]
+}
