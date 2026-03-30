@@ -432,9 +432,12 @@ function render(d){
   var cats=d.filter(function(x){return x.frustration_level==='catastrophic';});
   var usingFallback=false;
   if(!cats.length){cats=d.filter(function(x){return x.frustration_level==='significant';});usingFallback=true;}
-  var wows=d.filter(function(x){return x.delight_level==='wow';});
+  var wows=d.filter(function(x){return x.delight_level==='wow'&&x.emotion==='positive';});
   var n=d.length||1;
-  $('keyStats').innerHTML='<div class="stat-box"><div class="stat-num">'+d.length+'</div><div class="stat-lbl">'+L.totalEntries+'</div></div><div class="stat-box red"><div class="stat-num">'+Math.round(cats.length/n*100)+'%</div><div class="stat-lbl">'+L.catPct+'</div></div><div class="stat-box grn"><div class="stat-num">'+Math.round(wows.length/n*100)+'%</div><div class="stat-lbl">'+L.wowPct+'</div></div>';
+  var catPctVal=cats.length/n*100;var wowPctVal=wows.length/n*100;
+  var catPctStr=catPctVal<1&&catPctVal>0?'<1%':Math.round(catPctVal)+'%';
+  var wowPctStr=wowPctVal<1&&wowPctVal>0?'<1%':Math.round(wowPctVal)+'%';
+  $('keyStats').innerHTML='<div class="stat-box"><div class="stat-num">'+d.length+'</div><div class="stat-lbl">'+L.totalEntries+'</div></div><div class="stat-box red"><div class="stat-num">'+catPctStr+'</div><div class="stat-lbl">'+L.catPct+'</div></div><div class="stat-box grn"><div class="stat-num">'+wowPctStr+'</div><div class="stat-lbl">'+L.wowPct+'</div></div>';
   renderCat(cats,usingFallback);renderWow(wows);renderAttr(d);renderMigration();render07();render08();render09();initM11(d);renderPersonas();applyLang();
 }
 
@@ -453,7 +456,7 @@ function renderCat(items,usingFallback){
 function renderWow(items){var el=$('wowList');if(!items.length){el.innerHTML='<div class="empty">'+T[lang].noData+'</div>';return;}el.innerHTML=items.map(function(it){return vcHtml(it,'wow');}).join('');}
 
 function renderAttr(d){
-  var archs=['后处理壁垒型','可靠性受损型','技术门槛型','场景期待型','生态锁定型','总拥有成本型','品牌魅力型','失望离开型','综合反馈型'];
+  var archs=['综合反馈型','可靠性受损型','技术门槛型','后处理壁垒型','品牌魅力型','生态锁定型','总拥有成本型','场景期待型','失望离开型'];
   var cm={'后处理壁垒型':'r','可靠性受损型':'r','技术门槛型':'','场景期待型':'l','生态锁定型':'','总拥有成本型':'','品牌魅力型':'l','失望离开型':'r','综合反馈型':''};
   var counts={};archs.forEach(function(a){counts[a]=0;});
   d.forEach(function(x){if(x.archetype&&counts.hasOwnProperty(x.archetype))counts[x.archetype]++;});
