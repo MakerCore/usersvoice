@@ -44,7 +44,7 @@
         const supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
         async function loadAllPersonas() {
-            const { data, error } = await supabaseClient.from('user_voices').select('*');
+            const { data, error } = await supabaseClient.from('inew_user_voices').select('*');
             if (error) return document.getElementById('persona-list').innerHTML = '<div class="text-red-500">加载失败</div>';
             
             const stats = {};

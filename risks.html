@@ -47,7 +47,7 @@
         let currentFilter = 'all';
 
         async function loadData() {
-            const { data, error } = await supabaseClient.from('user_voices').select('*').order('risk_level', { ascending: false });
+            const { data, error } = await supabaseClient.from('inew_user_voices').select('*').order('risk_level', { ascending: false });
             if (error) return;
             // 筛选风险数据：risk_level有值或emotion=negative或type=risk
             allData = data.filter(d => d.risk_level || d.emotion === 'negative' || d.type === 'risk');
